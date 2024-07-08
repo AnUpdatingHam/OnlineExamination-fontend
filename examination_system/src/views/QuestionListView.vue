@@ -15,8 +15,10 @@
           <p>{{ question.content }}</p>
           <ul class="options-list">
             <li v-for="(option, optionIndex) in question.options" :key="optionIndex">
-              <input type="radio" :id="`option-${index}-${optionIndex}`" :name="`question-${index}`" v-model="selectedAnswers[index]" :disabled="submitted">
-              <label :for="`option-${index}-${optionIndex}`">{{ option }}</label>
+<!--              <div class="Radio">-->
+                <input type="radio" :id="`option-${index}-${optionIndex}`" :name="`question-${index}`" v-model="selectedAnswers[index]" :disabled="submitted">
+                <label :for="`option-${index}-${optionIndex}`">{{ option }}</label>
+<!--              </div>-->
             </li>
           </ul>
           <!-- Show correct answer and analysis after submission -->
@@ -28,10 +30,10 @@
       </div>
     </div>
     <div v-if="!submitted" class="paper-footer">
-      <button class="submit-button" @click="submitPaper">交卷</button>
+      <button class="submit-button" @click="submitPaper">交 卷</button>
     </div>
     <div v-if="submitted" class="result-container">
-      <h3>你的成绩：{{ totalScore }} 分</h3>
+      <h3 style="color: #e83232">你的成绩：{{ totalScore }} 分</h3>
     </div>
   </div>
 </template>
@@ -43,7 +45,7 @@ export default {
       questions: [
         {
           id: 1,
-          content: '这里是问题的具体内容。',
+          content: '这里是问题的具体内容。这是一个示例文本，它将展示自动换行的效果。这是一个示例文本，它将展示自动换行的效果。Lorem ipsum dolor sit amet, consectetur adipiscing elit.Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n这里是问题的具体内容。这是一个示例文本，它将展示自动换行的效果。这是一个示例文本，它将展示自动换行的效果。Lorem ipsum dolor sit amet, consectetur adipiscing elit.Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n这里是问题的具体内容。这是一个示例文本，它将展示自动换行的效果。这是一个示例文本，它将展示自动换行的效果。Lorem ipsum dolor sit amet, consectetur adipiscing elit.Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n',
           options: ['选项1', '选项2', '选项3', '选项4'],
           score: 5,
           correctAnswer: 0,
@@ -84,29 +86,39 @@ export default {
 
 <style scoped>
 .question-list {
-  max-width: 800px;
-  margin: 0 auto;
+  max-width: 1200px;
+  min-width:100px;
+  margin: auto;
   font-family: Arial, sans-serif;
-  background-color: #f9f9f9;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  padding: 10px;
+  border-radius: 15px;
+  box-shadow: 0 0 10px rgba(106, 105, 105, 0.1);
+  border: solid;
+  overflow: auto;
 }
-
-.paper-header {
-  text-align: center;
-  margin-bottom: 20px;
+.question-list::-webkit-scrollbar{
+  width: 0px;/*隐藏滚动条*/
 }
 
 .question-list-container {
   background-color: #fff;
-  padding: 15px;
+  padding: 20px;
   border-radius: 8px;
+  border-block:1px solid #000000;
+  width: 85vw;
+  height: fit-content;
+  word-wrap: break-word;
+}
+
+.paper-header {
+  text-align: center;
+  margin-bottom: 5px;
 }
 
 .question-item {
-  margin-bottom: 20px;
-  border: 1px solid #ccc;
+  margin-bottom: 15px;
+  border: 1px solid #0bb4b0;
   padding: 15px;
   border-radius: 8px;
 }
@@ -115,7 +127,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .question-number {
@@ -123,30 +135,34 @@ export default {
 }
 
 .question-score {
-  color: #666;
+  color: #0bb4b0;
 }
 
 .options-list {
   list-style-type: none;
-  padding: 0;
+  padding: 5px;
 }
 
 .options-list li {
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 }
 
 .submit-button {
-  background-color: #007bff;
+  background-color: #0bb4b0;
   color: #fff;
-  border: none;
+  border: solid;
   padding: 10px 20px;
   font-size: 16px;
-  border-radius: 5px;
+  font-weight: bold;
+  border-radius: 7px;
   cursor: pointer;
+  float:right;
+  margin-bottom: 20px;
+  margin-right: 15px;
 }
 
 .submit-button:hover {
-  background-color: #0056b3;
+  background-color: #046a66;
 }
 
 .result-container {
@@ -159,7 +175,7 @@ export default {
 }
 
 .analysis {
-  color: black;
+  color: #e83232;
   font-weight: bold;
 }
 </style>
