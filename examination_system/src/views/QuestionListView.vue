@@ -16,7 +16,7 @@
           <ul class="options-list">
             <li v-for="(option, optionIndex) in question.options" :key="optionIndex">
 <!--              <div class="Radio">-->
-                <input type="radio" :id="`option-${index}-${optionIndex}`" :name="`question-${index}`" v-model="selectedAnswers[index]" :disabled="submitted">
+                <input type="radio" :id="`option-${index}-${optionIndex}`" :name="`question-${index}`" v-model="selectedAnswers[index]" :disabled="submitted" :value="optionIndex" @change="recordAnsChange(index)">
                 <label :for="`option-${index}-${optionIndex}`">{{ option }}</label>
 <!--              </div>-->
             </li>
@@ -39,9 +39,35 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
+      records: [
+      {
+        "questionId": 0,
+        "ans": "string",
+        "text": "string",
+        "imageUrls": "string",
+        "type": 0,
+        "candidateAns": "string",
+        "candidateAnsUrls": "string",
+        "recordId": 0,
+        "orderNumber": 0
+      },
+      {
+        "questionId": 1,
+        "ans": "string",
+        "text": "string",
+        "imageUrls": "string",
+        "type": 1,
+        "candidateAns": "string",
+        "candidateAnsUrls": "string",
+        "recordId": 1,
+        "orderNumber": 1
+      }
+    ], //历史作答记录
       questions: [
         {
           id: 1,
@@ -79,6 +105,35 @@ export default {
   methods: {
     submitPaper() {
       this.submitted = true;
+    },
+    async recordAnsChange(questionIndex) {
+      try {
+        const putData = {
+          id: this.records[questionIndex].recordId,//需要请求获得records
+          ans: this.selectedAnswers[questionIndex]
+        }
+        const ret = await axios.put('/user/record', putData)
+      } catch(error) {
+        console.error("Puting Data Error:", error)
+      }
+    }
+  },
+
+  async created() {
+    try {
+      //请求历史作答记录
+      const getData = {
+        userId: this.userId,//需要修改
+        examId: this.examId,//需要修改
+        page: this.page,//需要修改
+        pageSize: this.pageSize//需要修改
+      }
+      const ret = await axios.get('/user/exam/records/page', getData)
+      this.records = ret.records
+      //根据历史作答和试卷渲染页面
+
+    } catch(error) {
+      console.error("Getting Data Error:", error)
     }
   }
 };
