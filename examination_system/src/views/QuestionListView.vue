@@ -177,7 +177,6 @@ export default {
   background-color: #fff;
   padding: 20px;
   border-radius: 8px;
-  border-block:1px solid #000000;
   width: 60vw;
   height: fit-content;
   word-wrap: break-word;

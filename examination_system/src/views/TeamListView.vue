@@ -132,8 +132,9 @@ export default {
 }
 
 .team-container {
+  margin: 1vh 3vw;
   padding: 20px;
-  border: 1px solid #0bb4b0; /* 添加整体的背景框 */
+  border: 1px solid #cdcbcb; /* 添加整体的背景框 */
   border-radius: 10px;
   overflow: auto;
 }
@@ -157,21 +158,23 @@ export default {
   cursor: pointer;
   display: -webkit-box;
   overflow: hidden;
-  border: 1px solid black;
 }
 
 .team-content {
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-  right: 10px;
+  position: relative;
+  top:55%;
+  background-color: rgba(0,0,0,20%);
+  width: 100%;
+  height: 45%;
 }
 
-.team-year {
+.team-term {
   font-size: 13px;
   font-weight: normal;
   position:relative;
   color: #ffffff;
+  top:3%;
+  left:3%;
 }
 
 .team-name {
@@ -181,6 +184,7 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  margin-left:3%;
 }
 .team-name:hover{
   text-overflow: inherit;
@@ -188,10 +192,10 @@ export default {
   white-space: pre-line;
 }
 
-.team-details p {
+.team-admins p {
   font-family: Arial, sans-serif;
   font-size: 14px;
-  margin-top: 5px;
+  margin-left: 3%;
 }
 
 </style>
