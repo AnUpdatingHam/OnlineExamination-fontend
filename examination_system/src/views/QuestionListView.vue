@@ -16,7 +16,7 @@
           <ul class="options-list">
             <li v-for="(option, optionIndex) in question.options" :key="optionIndex">
 <!--              <div class="Radio">-->
-                <input type="radio" :id="`option-${index}-${optionIndex}`" :name="`question-${index}`" v-model="selectedAnswers[index]" :disabled="submitted" :value="optionIndex" @change="recordAnsChange(index)">
+                <input type="radio" :id="`option-${index}-${optionIndex}`" :name="`question-${index}`" v-model="questions[index].ans" :disabled="submitted" :value="optionIndex" @change="recordAnsChange(index)">
                 <label :for="`option-${index}-${optionIndex}`">{{ option }}</label>
 <!--              </div>-->
             </li>
@@ -92,7 +92,6 @@ export default {
         },
         // Add more questions as needed
       ],
-      selectedAnswers: [],
       submitted: false
     };
   },
@@ -100,7 +99,7 @@ export default {
     totalScore() {
       let score = 0;
       for (let i = 0; i < this.questions.length; i++) {
-        if (this.selectedAnswers[i] === this.questions[i].correctAnswer) {
+        if (this.questions[i].ans === this.questions[i].correctAnswer) {
           score += this.questions[i].score;
         }
       }
@@ -115,7 +114,7 @@ export default {
       try {
         const putData = {
           id: this.records[questionIndex].recordId,//需要请求获得records
-          ans: this.selectedAnswers[questionIndex]
+          ans: this.questions[questionIndex].ans
         }
         console.log("ans = " + putData.ans)
         const ret = await axios.put(`${constant.host}/user/record`, putData)
@@ -146,7 +145,6 @@ export default {
       this.questions = this.records
       for (let i = 0; i < this.questions.length; i++) {
         this.questions[i].options = this.records[i].candidateAns.split(' ')
-        this.selectedAnswers[i] = this.records[i].ans
       }
       //根据历史作答和试卷渲染页面
 
