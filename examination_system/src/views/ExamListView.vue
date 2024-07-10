@@ -37,16 +37,16 @@ export default {
         {
           id: 1,
           name: '期中考试',
-          beginTime: [2024, 12, 10, 9, 0],
-          endTime: [2024, 12, 10, 11, 0],
+          beginTime: "2024/12/10 9:00",
+          endTime:"2024/12/10 11:00",
           //添加图片为背景
           backgroundImg: constant.backgroundImg[1]
         },
         {
           id: 2,
           name: '期末考试',
-          beginTime: [2024, 10, 10, 9, 0],
-          endTime: [2024, 10, 10, 11, 0],
+          beginTime: "2024/12/10 9:00",
+          endTime: "2024/12/10 11:00",
           //添加图片为背景
           backgroundImg: constant.backgroundImg[2]
         }
@@ -116,8 +116,9 @@ export default {
 }
 
 .team-container {
+  margin: 1vh 3vw;
   padding: 20px;
-  border: 1px solid #0bb4b0; /* 添加整体的背景框 */
+  border: 1px solid #cdcbcb; /* 添加整体的背景框 */
   border-radius: 10px;
   overflow: auto;
 }
@@ -141,21 +142,22 @@ export default {
   cursor: pointer;
   display: -webkit-box;
   overflow: hidden;
-  border: 1px solid black;
 }
 
 .team-content {
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-  right: 10px;
+  position: relative;
+  top:55%;
+  background-color: rgba(0,0,0,20%);
+  width: 100%;
+  height: 45%;
 }
 
-.team-year {
+.team-term {
   font-size: 13px;
   font-weight: normal;
   position:relative;
-  color: #ffffff;
+  color:  #FFFFFF;
+  margin-left: 3%;
 }
 
 .team-name {
@@ -165,6 +167,7 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  margin-left: 3%;
 }
 .team-name:hover{
   text-overflow: inherit;
@@ -172,10 +175,6 @@ export default {
   white-space: pre-line;
 }
 
-.team-details p {
-  font-family: Arial, sans-serif;
-  font-size: 14px;
-  margin-top: 5px;
-}
 
 </style>
+
