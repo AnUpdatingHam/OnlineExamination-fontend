@@ -1,9 +1,11 @@
 import { reactive } from 'vue'
 
 export const store = reactive({
+  login: false,
   user: {
-    id: 1,
-    name: "张三",
+    id: 0,
+    username: "未登录",
+    token: '',
   },
   team: {
     id:1,
@@ -12,6 +14,4 @@ export const store = reactive({
     id: 1,
 
   },
-  token: '',
-
 })
