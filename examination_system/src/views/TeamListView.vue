@@ -11,7 +11,7 @@
     <div class="team-grid">
       <!-- 循环显示所有课程 -->
       <div v-for="(team, index) in teams" :key="index" class="team-item" :style="{ backgroundImage: 'url(' + team.backgroundImg + ')' }"
-      @click="test(index)">
+      @click="gotoExam(index)">
         <div class="team-content">
           <div class="team-term">{{ team.term }}</div>
           <div class="team-name">{{ team.name }}</div>
@@ -96,7 +96,7 @@ export default {
     }
   },
   methods: {
-    test(index){
+    gotoExam(index){
       store.team = this.teams[index]
       this.$router.push({name: 'exam'})
     },
