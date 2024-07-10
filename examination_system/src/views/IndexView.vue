@@ -4,7 +4,7 @@
       <h2 style="font-size:60px;font-weight:1000;margin-bottom: 20px;" >墨韵云阁</h2>
       <p style="margin-bottom:40px;font-size: 18px;font-weight: 400;">更加智能的在线考试系统</p>
       <div>
-        <el-button type="primary" round style="border-radius: 40px;width: 128px;height: 52px;background-color: #0608E3;font-size: 18px;font-weight: 400;" @click="goToPaper">创建试卷</el-button>
+        <el-button type="primary" round style="border-radius: 40px;width: 128px;height: 52px;background-color: #0608E3;font-size: 18px;font-weight: 400;" @click="goToTeam">创建试卷</el-button>
       </div>
     </el-col>
     <el-col :span="12" style="width: 60%; display: flex;align-items: start;justify-content: center;">

@@ -1,9 +1,10 @@
 <template>
   <div class="question-list">
     <div class="paper-header">
-      <h2>试卷名称</h2>
-      <p>考试日期：2024年7月1日</p>
-      <p>考试时间：120分钟</p>
+      <h2>{{team.name}}</h2>
+      <h2>{{exam.name}}</h2>
+      <p>开始时间: {{exam.beginTime}}</p>
+      <p>结束时间: {{exam.endTime}}</p>
     </div>
     <div class="question-list-container">
       <div v-for="(question, index) in questions" :key="question.id" class="question-item">
@@ -41,10 +42,13 @@
 <script>
 import axios from 'axios';
 import {constant} from "@/stores/constant";
+import {store} from "@/stores/store";
 
 export default {
   data() {
     return {
+      team: store.team,
+      exam: store.exam,
       records: [
       {
         "questionId": 0,
@@ -116,7 +120,6 @@ export default {
           id: this.records[questionIndex].recordId,//需要请求获得records
           ans: this.questions[questionIndex].ans
         }
-        console.log("ans = " + putData.ans)
         const ret = await axios.put(`${constant.host}/user/record`, putData)
       } catch(error) {
         console.error("Puting Data Error:", error)
@@ -127,14 +130,12 @@ export default {
   async created() {
     try {
       //填入测试数据
-      this.userId = 2;
-      this.examId = 1;
       this.page = 1;
       this.pageSize = 10;
       //请求历史作答记录
       const queryParams = {
-        userId: this.userId,//需要修改
-        examId: this.examId,//需要修改
+        userId: store.user.id,
+        examId: store.exam.id,
         page: this.page,//需要修改
         pageSize: this.pageSize//需要修改
       }
@@ -177,7 +178,7 @@ export default {
   padding: 20px;
   border-radius: 8px;
   border-block:1px solid #000000;
-  width: 85vw;
+  width: 60vw;
   height: fit-content;
   word-wrap: break-word;
 }

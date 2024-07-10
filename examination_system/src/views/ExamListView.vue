@@ -1,7 +1,7 @@
 <template>
   <div class="header"> <!-- 这里是header的开始 -->
     <div class="left">
-      <span>我的课群</span>
+      <span>"{{team.name}}"的考试</span>
     </div>
     <div class="right">
       <el-button type="primary" @click="goToAddCourse">添加课群</el-button>
@@ -9,15 +9,13 @@
   </div>
   <div class="team-container">
     <div class="team-grid">
-      <!-- 循环显示所有课程 -->
-      <div v-for="(team, index) in teams" :key="index" class="team-item" :style="{ backgroundImage: 'url(' + team.backgroundImg + ')' }"
+      <!-- 循环显示所有考试 -->
+      <div v-for="(exam, index) in exams" :key="index" class="team-item" :style="{ backgroundImage: 'url(' + exam.backgroundImg + ')' }"
       @click="test(index)">
         <div class="team-content">
-          <div class="team-term">{{ team.term }}</div>
-          <div class="team-name">{{ team.name }}</div>
-          <div class="team-admins">
-            <p>负责人： {{ team.admins }}</p>
-          </div>
+          <div class="team-name">{{ exam.name }}</div>
+          <div class="team-term">开始时间: {{ exam.beginTime }}</div>
+          <div class="team-term">结束时间: {{ exam.endTime }}</div>
         </div>
       </div>
     </div>
@@ -30,63 +28,33 @@ import {constant} from "@/stores/constant";
 import {store} from "@/stores/store";
 
 export default {
-  name: 'TeamListView',
+  name: 'ExamListView',
 
   data() {
     return {
-      teams: [
-        {
-          //id: ???
-          term: '2024-2025',
-          name: '计算机科学导论',
-          admins: '张璞',
-          //添加图片为背景
-          backgroundImg: constant.backgroundImg[1]
-        },
-        {
-          term: '2024-2025',
-          name: '数据结构与算法',
-          admins: '震撼',
-          backgroundImg: constant.backgroundImg[2]
-        },
-        {
-          term: '2024-2025',
-          name: '数据库原理',
-          admins: '王琦',
-          backgroundImg: constant.backgroundImg[3]
-        },
-        {
-          term: '2024-2025',
-          name: '操作系统',
-          admins: '李白',
-          backgroundImg: constant.backgroundImg[4]
-        },
-        {
-          term: '2024-2025',
-          name: '人工智能基础',
-          admins: '张无忌',
-          backgroundImg: constant.backgroundImg[5]
-        },
-        // 新添加的课程对象
+      team: store.team,
+      exams: [
       ]
     };
   },
   async created() {
     try {
       //填入测试数据
-      this.page = 1;
-      this.pageSize = 10;
+      this.page = 1
+      this.pageSize = 10
+      this.team = store.team
       //请求历史作答记录
       const queryParams = {
         userId: store.user.id,
+        teamId: store.team.id,
         page: this.page,//需要修改
         pageSize: this.pageSize//需要修改
       }
 
-      const ret = await axios.get(`${constant.host}/user/team/page`, {params: queryParams})
-      this.teams = ret.data.data.records
-      for(let i = 0; i < this.teams.length ; i++){
-        this.teams[i].backgroundImg = constant.backgroundImg[(i + 8) % 8]
+      const ret = await axios.get(`${constant.host}/user/exam/page`, {params: queryParams})
+      this.exams = ret.data.data.records
+      for(let i = 0; i < this.exams.length ; i++){
+        this.exams[i].backgroundImg = constant.backgroundImg[(i + 8) % 8]
       }
       console.log(JSON.stringify(ret))
       //根据历史作答和试卷渲染页面
@@ -97,8 +65,8 @@ export default {
   },
   methods: {
     test(index){
-      store.team = this.teams[index]
-      this.$router.push({name: 'exam'})
+      store.exam = this.exams[index]
+      this.$router.push({name: 'question'})
     },
   }
 };
