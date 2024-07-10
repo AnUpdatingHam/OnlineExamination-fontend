@@ -36,9 +36,9 @@ const iconColor = ref('color:#F8FAFB')
           <template #title>
             <el-icon>
               <Message />
-            </el-icon><span>评论管理</span>
+            </el-icon><span>问题列表</span>
           </template>
-          <el-menu-item index="/admin/comments">评论管理列表</el-menu-item>
+          <el-menu-item index="/question">问题列表</el-menu-item>
         </el-sub-menu>
         <el-sub-menu index="4">
           <template #title>

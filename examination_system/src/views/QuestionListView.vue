@@ -12,7 +12,7 @@
           <span class="question-score">（{{ question.score }} 分）</span>
         </div>
         <div class="question-body">
-          <p>{{ question.content }}</p>
+          <p>{{ question.text }}</p>
           <ul class="options-list">
             <li v-for="(option, optionIndex) in question.options" :key="optionIndex">
 <!--              <div class="Radio">-->
@@ -40,6 +40,7 @@
 
 <script>
 import axios from 'axios';
+import {constant} from "@/stores/constant";
 
 export default {
   data() {
@@ -71,19 +72,23 @@ export default {
       questions: [
         {
           id: 1,
-          content: '这里是问题的具体内容。这是一个示例文本，它将展示自动换行的效果。这是一个示例文本，它将展示自动换行的效果。Lorem ipsum dolor sit amet, consectetur adipiscing elit.Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n这里是问题的具体内容。这是一个示例文本，它将展示自动换行的效果。这是一个示例文本，它将展示自动换行的效果。Lorem ipsum dolor sit amet, consectetur adipiscing elit.Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n这里是问题的具体内容。这是一个示例文本，它将展示自动换行的效果。这是一个示例文本，它将展示自动换行的效果。Lorem ipsum dolor sit amet, consectetur adipiscing elit.Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n',
-          options: ['选项1', '选项2', '选项3', '选项4'],
+          text: '这里是问题的具体内容。这是一个示例文本，它将展示自动换行的效果。这是一个示例文本，它将展示自动换行的效果。Lorem ipsum dolor sit amet, consectetur adipiscing elit.Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n这里是问题的具体内容。这是一个示例文本，它将展示自动换行的效果。这是一个示例文本，它将展示自动换行的效果。Lorem ipsum dolor sit amet, consectetur adipiscing elit.Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n这里是问题的具体内容。这是一个示例文本，它将展示自动换行的效果。这是一个示例文本，它将展示自动换行的效果。Lorem ipsum dolor sit amet, consectetur adipiscing elit.Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n',
+          candidateAns: "选项A 选项B 选项C 选项D",
+          options: ['选项A', '选项B', '选项C', '选项D'],
           score: 5,
           correctAnswer: 0,
-          analysis: '这里是解析的内容，可以根据实际需要填写。'
+          analysis: '这里是解析的内容，可以根据实际需要填写。',
+          ans: 1
         },
         {
           id: 2,
-          content: '这是第二个问题。',
+          text: '这是第二个问题。',
+          candidateAns: "选项A 选项B 选项C 选项D",
           options: ['选项A', '选项B', '选项C', '选项D'],
           score: 10,
           correctAnswer: 1,
-          analysis: '这里是第二个问题的解析内容。'
+          analysis: '这里是第二个问题的解析内容。',
+          ans: 2
         },
         // Add more questions as needed
       ],
@@ -112,7 +117,8 @@ export default {
           id: this.records[questionIndex].recordId,//需要请求获得records
           ans: this.selectedAnswers[questionIndex]
         }
-        const ret = await axios.put('/user/record', putData)
+        console.log("ans = " + putData.ans)
+        const ret = await axios.put(`${constant.host}/user/record`, putData)
       } catch(error) {
         console.error("Puting Data Error:", error)
       }
@@ -121,15 +127,27 @@ export default {
 
   async created() {
     try {
+      //填入测试数据
+      this.userId = 2;
+      this.examId = 1;
+      this.page = 1;
+      this.pageSize = 10;
       //请求历史作答记录
-      const getData = {
+      const queryParams = {
         userId: this.userId,//需要修改
         examId: this.examId,//需要修改
         page: this.page,//需要修改
         pageSize: this.pageSize//需要修改
       }
-      const ret = await axios.get('/user/exam/records/page', getData)
-      this.records = ret.records
+
+      const ret = await axios.get(`${constant.host}/user/exam/records/page`, {params: queryParams})
+      console.log(JSON.stringify(ret))
+      this.records = ret.data.data.records
+      this.questions = this.records
+      for (let i = 0; i < this.questions.length; i++) {
+        this.questions[i].options = this.records[i].candidateAns.split(' ')
+        this.selectedAnswers[i] = this.records[i].ans
+      }
       //根据历史作答和试卷渲染页面
 
     } catch(error) {
