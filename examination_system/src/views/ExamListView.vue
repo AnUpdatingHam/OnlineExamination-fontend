@@ -88,11 +88,11 @@ export default {
     },
     formatDateArrayToString(dateArray) {
       // 检查传入的数组是否具有5个元素
-      if (!dateArray || dateArray.length !== 5) {
-        throw new Error('日期数组必须包含5个元素：年、月、日、小时、分钟');
+      if (!dateArray || dateArray.length !== 6) {
+        throw new Error('日期数组必须包含6个元素：年、月、日、小时、分钟');
       }
       // 解构数组元素
-      const [year, month, day, hour, minute] = dateArray;
+      const [year, month, day, hour, minute, second] = dateArray;
 
       // 使用padStart方法确保月、日、小时和分钟是两位数格式
       const formattedMonth = String(month).padStart(2, '0');
