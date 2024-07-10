@@ -1,78 +1,324 @@
 <template>
 
+  <div class="find">
+    <div class="select">
+      <p>用户列表</p>
+      <div class="select-opt" :class="{'active':active===-1}" @click=switchActive2()>震撼-资伍组</div>
+      <div class="select-opt" v-for="(opt,index) in options" :key="index" :class="{'active':active===index}" @click="switchActive(index)">
+        {{ opt }}
+      </div>
+    </div>
+    <div class="search">
+      <input type="text" placeholder="搜索" v-model="search">
+      <img src="../assets/search.png">
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>学号</th>
+        <th>用户名</th>
+
+        <th>手机号</th>
+        <th>邮箱</th>
+        <th>头像</th>
+        <th>创建时间</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="(item,index) in displayData" :key="item.id" @click="goToPaper">
+        <td>{{ item.stuId }}</td>
+        <td>{{ item.username }}</td>
+        <td>{{ item.phone }}</td>
+        <td>{{ item.email }}</td>
+
+        <td class="img-td"><img :src="item.imageUrl" alt="用户头像"></td>
+        <td>{{ item.createTime }}</td>
+        <td>
+          <a href="#" @click="editUser(item.id)" style="color: #87CEFA;">
+            <img src="../assets/xiu_gai2.png" alt="Edit" width="16" height="16"> 修改
+          </a>
+          <span>&nbsp;</span> <!-- 添加一个空格 -->
+          <span>&nbsp;</span> <!-- 添加一个空格 -->
+          <span>&nbsp;</span> <!-- 添加一个空格 -->
+          <span>&nbsp;</span> <!-- 添加一个空格 -->
+          <span>&nbsp;</span> <!-- 添加一个空格 -->
+          <span>&nbsp;</span> <!-- 添加一个空格 -->
+          <a href="#" @click="deleteUser(item.id)" style="color: #87CEFA;">
+            <img src="../assets/delete3.png" alt="Delete" width="16" height="16"> 删除
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <el-pagination 
+    :hide-on-single-page="false" 
+    v-model:current-page="state.pageNum" 
+    :page-sizes="[10]"
+    v-model:page-size="state.pageSize" 
+    layout="total, sizes, prev, pager, next, jumper" 
+    :total="state.totalNumber"
+    @size-change="handleSizeChange" 
+    @current-change="handleCurrentChange" 
+    style="float:right">
+  </el-pagination>
+
 </template>
 
 <script>
+// 引入 Axios 库
 import axios from "axios";
 import {constant} from "@/stores/constant";
 import {store} from "@/stores/store";
 
-export default {
-  name: 'UserListView',
-
-  data() {
-    return {
-      users: [
-        {
-          id: 1,
-          stuId: 0,
-          username: "testname1",
-          password: "string",
-          phone: "string",
-          email: "string",
-          imageUrl: "string",
-          create_time: "2019-08-24T14:15:22Z"
-        },
-        {
-          id: 2,
-          stuId: 0,
-          username: "testname2",
-          password: "string",
-          phone: "string",
-          email: "string",
-          imageUrl: "string",
-          create_time: "2019-08-24T14:15:22Z"
-        },
-        // 新添加的用户对象
-      ]
-    };
-  },
-  
-  //以下未测试
-  async created() {
-    try {
-      //填入测试数据
-      this.username = store.user.name
-      this.page = 1
-      this.pageSize = 10
-      //请求历史作答记录
-      const queryParams = {
-        username: this.username,//需要修改
-        page: this.page,//需要修改
-        pageSize: this.pageSize//需要修改
-      }
-
-      const ret = await axios.get(`${constant.host}/user/user/page`, {params: queryParams})
-      this.users = ret.data.data.records
-      console.log(JSON.stringify(ret))
-
-    } catch(error) {
-      console.error("Getting Data Error:", error)
+export default{
+  data(){
+    return{
+      // options: ["资伍组","郑汉","震撼"],
+      active: -1,
+      search: '',
+      state:{
+        pageNum: 1,
+        pageSize: 10,
+        createTimeEnd: "",
+        createTimeStart: "",
+        searchValue: "",
+        totalNumber: 24,    //n
+      },
+      historyData:[         //n组数据
+        {id: 1, stuId:123, username: '张璞',  phone:'12345', exam: '高考', avatarUrl: "https://tse1-mm.cn.bing.net/th/id/OIP-C.D9SyQRPpqDoTXRX0VRqJdAHaHa?w=206&h=208&c=7&r=0&o=5&dpr=1.4&pid=1.7", email:"123@exam.com", answer:'震撼', create_time: "2024.5.1"},
+        {id: 2, stuId:123, username: '震撼',  phone:'12142', exam: '中考', avatarUrl: "https://tse1-mm.cn.bing.net/th/id/OIP-C.D9SyQRPpqDoTXRX0VRqJdAHaHa?w=206&h=208&c=7&r=0&o=5&dpr=1.4&pid=1.7", email:"123@exam.com", answer: '无', create_time: "2024.5.1"},
+        {id: 3, stuId:123, username: '王琦',  phone:'54321', exam: '高考', avatarUrl: "https://tse1-mm.cn.bing.net/th/id/OIP-C.D9SyQRPpqDoTXRX0VRqJdAHaHa?w=206&h=208&c=7&r=0&o=5&dpr=1.4&pid=1.7", email:"123@exam.com", answer: '有', create_time: "2024.4.28"},
+        {id: 4, stuId:123, username: '刘济华',phone: '12345', exam: '中考', avatarUrl: "https://tse1-mm.cn.bing.net/th/id/OIP-C.D9SyQRPpqDoTXRX0VRqJdAHaHa?w=206&h=208&c=7&r=0&o=5&dpr=1.4&pid=1.7",email:"123@exam.com", answer: '有', create_time: "2024.4.28"},
+        {id: 5, stuId:123, username: '何中延',phone: '54321', exam: '高考', avatarUrl: "https://tse1-mm.cn.bing.net/th/id/OIP-C.D9SyQRPpqDoTXRX0VRqJdAHaHa?w=206&h=208&c=7&r=0&o=5&dpr=1.4&pid=1.7",email:"123@exam.com", answer: '无', create_time: "2024.4.28"},
+        {id: 6, stuId:123, username: '数学',  phone:'12345', exam: '高考', avatarUrl: "https://tse1-mm.cn.bing.net/th/id/OIP-C.D9SyQRPpqDoTXRX0VRqJdAHaHa?w=206&h=208&c=7&r=0&o=5&dpr=1.4&pid=1.7", email:"123@exam.com", answer: '有', create_time: "2024.4.21"},
+        {id: 7, stuId:123, username: '语文',  phone:'初三', exam: '中考', avatarUrl: "https://tse1-mm.cn.bing.net/th/id/OIP-C.D9SyQRPpqDoTXRX0VRqJdAHaHa?w=206&h=208&c=7&r=0&o=5&dpr=1.4&pid=1.7", email:"123@exam.com", answer: '有', create_time:"2024.4.21"},
+        {id: 8, stuId:123, username: '英语',  phone:'初二', exam: '中考', avatarUrl: "https://tse1-mm.cn.bing.net/th/id/OIP-C.D9SyQRPpqDoTXRX0VRqJdAHaHa?w=206&h=208&c=7&r=0&o=5&dpr=1.4&pid=1.7", email:"123@exam.com", answer: '无', create_time:"2024.4.21"},
+        {id: 9, stuId:123, username: '数学',  phone:'高一', exam: '高考', avatarUrl: "https://tse1-mm.cn.bing.net/th/id/OIP-C.D9SyQRPpqDoTXRX0VRqJdAHaHa?w=206&h=208&c=7&r=0&o=5&dpr=1.4&pid=1.7", email:"123@exam.com", answer: '有', create_time:"2024.4.19"},
+        {id: 10,stuId:123,  username:  '语文', phone: '初一', exam: '中考', avatarUrl: "https://tse1-mm.cn.bing.net/th/id/OIP-C.D9SyQRPpqDoTXRX0VRqJdAHaHa?w=206&h=208&c=7&r=0&o=5&dpr=1.4&pid=1.7", email:"123@exam.com",  answer: '有',create_time: "2024.4.19"},
+        {id: 11,stuId:123,  username:  '英语', phone: '初二', exam: '中考', avatarUrl: "https://tse1-mm.cn.bing.net/th/id/OIP-C.D9SyQRPpqDoTXRX0VRqJdAHaHa?w=206&h=208&c=7&r=0&o=5&dpr=1.4&pid=1.7", email:"123@exam.com", answer: '无', create_time: "2024.4.19"},
+        {id: 12,stuId:123,  username:  '数学', phone: '高一', exam: '高考', avatarUrl: "https://tse1-mm.cn.bing.net/th/id/OIP-C.D9SyQRPpqDoTXRX0VRqJdAHaHa?w=206&h=208&c=7&r=0&o=5&dpr=1.4&pid=1.7", email:"123@exam.com", answer: '有', create_time: "2024.4.16"},
+        {id: 14,stuId:123,  username:  '英语', phone: '高二', exam: '高考', avatarUrl: "https://tse1-mm.cn.bing.net/th/id/OIP-C.D9SyQRPpqDoTXRX0VRqJdAHaHa?w=206&h=208&c=7&r=0&o=5&dpr=1.4&pid=1.7", email:"123@exam.com", answer: '有', create_time: "2024.4.10"},
+        {id: 13,stuId:123,  username:  '英语', phone: '初二', exam: '中考', avatarUrl: "https://tse1-mm.cn.bing.net/th/id/OIP-C.D9SyQRPpqDoTXRX0VRqJdAHaHa?w=206&h=208&c=7&r=0&o=5&dpr=1.4&pid=1.7", email:"123@exam.com", answer: '有', create_time: "2024.4.10"},
+        {id: 15,stuId:123,  username:  '数学', phone: '初二', exam: '中考', avatarUrl: "https://tse1-mm.cn.bing.net/th/id/OIP-C.D9SyQRPpqDoTXRX0VRqJdAHaHa?w=206&h=208&c=7&r=0&o=5&dpr=1.4&pid=1.7", email:"123@exam.com", answer: '无', create_time: "2024.4.10"},
+        {id: 16,stuId:123,  username:  '语文', phone: '初三', exam: '中考', avatarUrl: "https://tse1-mm.cn.bing.net/th/id/OIP-C.D9SyQRPpqDoTXRX0VRqJdAHaHa?w=206&h=208&c=7&r=0&o=5&dpr=1.4&pid=1.7", email:"123@exam.com", answer: '有', create_time: "2024.4.10"},
+        {id: 17,stuId:123,  username:  '英语', phone: '初二', exam: '中考', avatarUrl: "https://tse1-mm.cn.bing.net/th/id/OIP-C.D9SyQRPpqDoTXRX0VRqJdAHaHa?w=206&h=208&c=7&r=0&o=5&dpr=1.4&pid=1.7", email:"123@exam.com", answer: '无', create_time: "2024.4.10"},
+        {id: 18,stuId:123,  username:  '数学', phone: '初三', exam: '中考', avatarUrl: "https://tse1-mm.cn.bing.net/th/id/OIP-C.D9SyQRPpqDoTXRX0VRqJdAHaHa?w=206&h=208&c=7&r=0&o=5&dpr=1.4&pid=1.7", email:"123@exam.com", answer: '有', create_time: "2024.4.10"},
+        {id: 19,stuId:123,  username:  '语文', phone: '初三', exam: '中考', avatarUrl: "https://tse1-mm.cn.bing.net/th/id/OIP-C.D9SyQRPpqDoTXRX0VRqJdAHaHa?w=206&h=208&c=7&r=0&o=5&dpr=1.4&pid=1.7", email:"123@exam.com", answer: '无', create_time: "2024.4.9"},
+        {id: 20,stuId:123,  username:  '英语', phone: '初二', exam: '中考', avatarUrl: "https://tse1-mm.cn.bing.net/th/id/OIP-C.D9SyQRPpqDoTXRX0VRqJdAHaHa?w=206&h=208&c=7&r=0&o=5&dpr=1.4&pid=1.7", email:"123@exam.com", answer: '有', create_time: "2024.4.7"},
+        {id: 21,stuId:123,  username:  '数学', phone: '高一', exam: '高考', avatarUrl: "https://tse1-mm.cn.bing.net/th/id/OIP-C.D9SyQRPpqDoTXRX0VRqJdAHaHa?w=206&h=208&c=7&r=0&o=5&dpr=1.4&pid=1.7", email:"123@exam.com", answer: '有', create_time: "2024.4.5"},
+        {id: 22,stuId:123,  username:  '语文', phone: '初二', exam: '中考', avatarUrl: "https://tse1-mm.cn.bing.net/th/id/OIP-C.D9SyQRPpqDoTXRX0VRqJdAHaHa?w=206&h=208&c=7&r=0&o=5&dpr=1.4&pid=1.7", email:"123@exam.com", answer: '有', create_time: "2024.4.2"},
+        {id: 23,stuId:123,  username:  '英语', phone: '初二', exam: '中考', avatarUrl: "https://tse1-mm.cn.bing.net/th/id/OIP-C.D9SyQRPpqDoTXRX0VRqJdAHaHa?w=206&h=208&c=7&r=0&o=5&dpr=1.4&pid=1.7", email:"123@exam.com", answer: '无', create_time: "2024.4.1"},
+        {id: 24,stuId:123,  username:  '数学', phone: '高二', exam: '高考', avatarUrl: "https://tse1-mm.cn.bing.net/th/id/OIP-C.D9SyQRPpqDoTXRX0VRqJdAHaHa?w=206&h=208&c=7&r=0&o=5&dpr=1.4&pid=1.7", email:"123@exam.com", answer: '无', create_time: "2024.4.1"},
+      ],
     }
   },
-  methods: {
-    async queryUserById(id) {
+  methods:{
+    formatDateArrayToString(dateArray) {
+      // 检查传入的数组是否具有6个元素
+      if (!dateArray || dateArray.length !== 6) {
+        throw new Error('日期数组必须包含6个元素：年、月、日、小时、分钟');
+      }
+      // 解构数组元素
+      const [year, month, day, hour, minute, second] = dateArray;
+
+      // 使用padStart方法确保月、日、小时和分钟是两位数格式
+      const formattedMonth = String(month).padStart(2, '0');
+      const formattedDay = String(day).padStart(2, '0');
+      const formattedHour = String(hour).padStart(2, '0');
+      const formattedMinute = String(minute).padStart(2, '0');
+
+      // 组合成最终的日期时间字符串
+      return `${year}-${formattedMonth}-${formattedDay} ${formattedHour}:${formattedMinute}`;
+    },
+    handleSizeChange(){
+      console.log("The size of page changed")
+    },
+    handleCurrentChange(){
+      console.log("The current page changed")
+    },
+    goToPaper(){
+      this.$router.push({name: 'home'})
+    },
+    switchActive(idx){
+      this.active=idx
+    },
+    switchActive2(){
+      this.active=-1
+    },
+    async editUser(targetId) {
+
+    },
+    async deleteUser(targetId) {
       try {
-        const ret = await axios.get(`${constant.host}/user/user/${id}`)
-        return ret.data.data
+        // console.log("targetId=",targetId,",",this.historyData)
+        // const ret = await axios.get(`${constant.host}/user/user/status/${targetId}/0`)
+        // console.log(JSON.stringify(ret))
+        this.historyData = this.historyData.filter((item) => item.id != targetId)
       } catch(error) {
         console.error("Getting Data Error:", error)
       }
+    },
+
+  },
+  computed:{
+    displayData(){
+      let data
+
+      if(this.active>-1){
+        let subjectData=[];
+        for(let i=0;i<this.historyData.length;i++)
+          if(this.options[this.active] === this.historyData[i].subject)
+            subjectData.push(this.historyData[i])
+        data=subjectData
+      }
+      else
+        data=this.historyData
+
+      if(this.search){
+        let searchData=[]
+        for(let i=0;i<data.length;i++)
+          for(let key in data[i]){
+            let it
+            if(typeof data[i][key] === "number")
+              it=String(data[i][key])
+            else
+              it=data[i][key]
+
+            if(it.includes(this.search)){
+              searchData.push(data[i])
+              break
+            }
+          }
+            
+        data=searchData
+      }
+      return data.slice((this.state.pageNum-1)*this.state.pageSize , this.state.pageNum*this.state.pageSize)
+    }
+  },
+  async created() {
+    try {
+      const queryParams = {
+        username: "",
+        page: 1,
+        pageSize: 10
+      }
+      const ret = await axios.get(`${constant.host}/user/user/page`, {params: queryParams})
+      this.historyData = ret.data.data.records
+      this.historyData.forEach((item) => {
+        let t;
+        item.createTime = this.formatDateArrayToString(item.createTime)
+      })
+      console.log("parms = ", queryParams, "ret = ", ret.data.data.records)
+    } catch(error) {
+      console.error("Getting Data Error:", error)
     }
   }
-};
+}
 </script>
 
-<style scoped>
+<style>
+
+.find{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 70px;
+  margin-bottom:10px;
+}
+
+.find .select{
+  display: flex;
+}
+
+.find .select p{
+  font-size:18px;
+}
+
+.select-opt{
+  font-size:18px;
+  height:33px;
+  margin-left:20px;
+  border: 1px solid grey;
+  border-radius: 5px;
+  padding-left:10px;
+  padding-right:10px;
+}
+
+.select-opt:hover{
+  background-color: #E1E1E1;
+  transition: 0.3s;
+}
+
+.active{
+  background-color: #409EFF;
+  color:#fff;
+}
+
+.active:hover{
+  background-color: #1D91E8; 
+}
+
+.search{
+  display: flex;
+  align-items: center;
+  margin-right:240px;
+}
+
+.search input{
+  font-size: 18px;
+  padding: 10px;
+  padding-left:40px;
+  width: 250px;
+  border: 2px solid white;
+  border-radius: 30px;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  margin-right: -240px;
+}
+
+.search img{
+  width: 30px;
+}
+
+table{
+  margin: 70px;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+table th{
+  font-size: 20px;
+  background-color: #F4F6F8;
+  height: 60px;
+}
+
+table td{
+  font-size: 18px;
+  text-align: center;
+  height: 40px;
+}
+
+table tr:hover{
+  background-color: #F6F6F6;
+}
+
+.el-pagination {
+  margin: auto;
+  margin-top: 20px;
+}
+img {
+  place-items: center;
+  max-width: 80%;
+  max-height: 80%;
+}
+
+.img-td{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 </style>
