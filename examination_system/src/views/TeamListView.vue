@@ -1,10 +1,10 @@
 <template>
   <div class="header"> <!-- 这里是header的开始 -->
     <div class="left">
-      <span>我的课程</span>
+      <span>我的课群</span>
     </div>
     <div class="right">
-      <el-button type="primary" @click="goToAddCourse">添加课程</el-button>
+      <el-button type="primary" @click="goToAddCourse">添加课群</el-button>
     </div>
   </div>
   <div class="course-container">

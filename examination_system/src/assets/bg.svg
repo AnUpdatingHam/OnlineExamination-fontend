@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800.3925857543945" height="742.3037109375" viewBox="0 0 800.3925857543945 742.3037109375" fill="none">
+<g filter="url(#filter_0_2359)">
+<path d="M504.173 266.721C341.028 141.227 169.075 54.0233 113.664 126.059C58.253 198.095 178.881 332.841 340.081 459.303C501.281 585.765 626.219 690.839 681.63 618.804C737.041 546.768 667.319 392.215 504.173 266.721Z"   fill="url(#linear_fill_0_2359)" fill-opacity="0.1">
+</path>
+</g>
+<defs>
+<linearGradient id="linear_fill_0_2359" x1="146.7701644897461" y1="101.0498046875" x2="737.5718460083008" y2="555.50390625" gradientUnits="userSpaceOnUse">
+<stop offset="0" stop-color="#F000F0"  />
+<stop offset="0.4584" stop-color="#0080FF"  />
+<stop offset="1" stop-color="#1500FF"  />
+</linearGradient>
+<filter id="filter_0_2359" x="0" y="0" width="800.3925857543945" height="742.3037109375" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="feFloodId_0_2359"/>
+<feBlend mode="normal" in="SourceGraphic" in2="feFloodId_0_2359" result="shape"/>
+<feGaussianBlur result="gaussian_blur_0_2359" stdDeviation="50"/>
+</filter>
+</defs>
+</svg>
