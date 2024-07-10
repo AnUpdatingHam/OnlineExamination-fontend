@@ -17,14 +17,14 @@
   <table>
     <thead>
       <tr>
-        <th>试卷名</th>
-        <th>科目</th>
-        <th>年级</th>
-        <th>考试类型</th>
-        <th>页数</th>
-        <th>题数</th>
-        <th>参考答案</th>
-        <th>生成时间</th>
+        <th>学号</th>
+        <th>用户名</th>
+        <th>密码</th>
+        <th>手机号</th>
+        <th>邮箱</th>
+        <th>头像</th>
+        <th>创建时间</th>
+        <th>操作</th>
       </tr>
     </thead>
     <tbody>
