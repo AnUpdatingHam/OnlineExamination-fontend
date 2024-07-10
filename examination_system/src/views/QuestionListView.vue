@@ -120,9 +120,19 @@ export default {
           id: this.records[questionIndex].recordId,//需要请求获得records
           ans: this.questions[questionIndex].ans
         }
-        const ret = await axios.put(`${constant.host}/user/record`, putData)
+        console.log(JSON.stringify(store.headersConfig))
+        const headersConfig = {
+          headers: {
+            'Content-Type': 'application/json', // 根据你的API要求设置正确的Content-Type
+                'Token': `${store.user.token}` // 通常Token以Bearer开头
+          }
+        }
+        const ret = await axios.put(`${constant.host}/user/record`, putData, headersConfig)
+        if(ret.data.code != 1){
+         alert(ret.data.msg) // 打印错误信息
+        }
       } catch(error) {
-        console.error("Puting Data Error:", error)
+        alert(error) // 打印错误信息
       }
     }
   },
