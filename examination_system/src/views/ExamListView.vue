@@ -34,6 +34,22 @@ export default {
     return {
       team: store.team,
       exams: [
+        {
+          id: 1,
+          name: '期中考试',
+          beginTime: [2024, 12, 10, 9, 0],
+          endTime: [2024, 12, 10, 11, 0],
+          //添加图片为背景
+          backgroundImg: constant.backgroundImg[1]
+        },
+        {
+          id: 2,
+          name: '期末考试',
+          beginTime: [2024, 10, 10, 9, 0],
+          endTime: [2024, 10, 10, 11, 0],
+          //添加图片为背景
+          backgroundImg: constant.backgroundImg[2]
+        }
       ]
     };
   },
