@@ -11,7 +11,7 @@
     <div class="team-grid">
       <!-- 循环显示所有考试 -->
       <div v-for="(exam, index) in exams" :key="index" class="team-item" :style="{ backgroundImage: 'url(' + exam.backgroundImg + ')' }"
-      @click="test(index)">
+      @click="gotoQuestion(index)">
         <div class="team-content">
           <div class="team-name">{{ exam.name }}</div>
           <div class="team-term">开始时间: {{ exam.beginTime }}</div>
@@ -37,16 +37,16 @@ export default {
         {
           id: 1,
           name: '期中考试',
-          beginTime: "2024/12/10 9:00",
-          endTime:"2024/12/10 11:00",
+          beginTime: [2024, 12, 10, 9, 0],
+          endTime:[2024, 12, 10, 11, 0],
           //添加图片为背景
           backgroundImg: constant.backgroundImg[1]
         },
         {
           id: 2,
           name: '期末考试',
-          beginTime: "2024/12/10 9:00",
-          endTime: "2024/12/10 11:00",
+          beginTime: [2024, 12, 12, 9, 0],
+          endTime: [2024, 12, 12, 11, 0],
           //添加图片为背景
           backgroundImg: constant.backgroundImg[2]
         }
@@ -70,7 +70,9 @@ export default {
       const ret = await axios.get(`${constant.host}/user/exam/page`, {params: queryParams})
       this.exams = ret.data.data.records
       for(let i = 0; i < this.exams.length ; i++){
-        this.exams[i].backgroundImg = constant.backgroundImg[(i + 8) % 8]
+        this.exams[i].backgroundImg = constant.backgroundImg[(i + 14) % 8]
+        this.exams[i].beginTime = this.formatDateArrayToString(this.exams[i].beginTime)
+        this.exams[i].endTime = this.formatDateArrayToString(this.exams[i].endTime)
       }
       console.log(JSON.stringify(ret))
       //根据历史作答和试卷渲染页面
@@ -80,10 +82,27 @@ export default {
     }
   },
   methods: {
-    test(index){
+    gotoQuestion(index){
       store.exam = this.exams[index]
       this.$router.push({name: 'question'})
     },
+    formatDateArrayToString(dateArray) {
+      // 检查传入的数组是否具有5个元素
+      if (!dateArray || dateArray.length !== 5) {
+        throw new Error('日期数组必须包含5个元素：年、月、日、小时、分钟');
+      }
+      // 解构数组元素
+      const [year, month, day, hour, minute] = dateArray;
+
+      // 使用padStart方法确保月、日、小时和分钟是两位数格式
+      const formattedMonth = String(month).padStart(2, '0');
+      const formattedDay = String(day).padStart(2, '0');
+      const formattedHour = String(hour).padStart(2, '0');
+      const formattedMinute = String(minute).padStart(2, '0');
+
+      // 组合成最终的日期时间字符串
+      return `${year}-${formattedMonth}-${formattedDay} ${formattedHour}:${formattedMinute}`;
+    }
   }
 };
 </script>
