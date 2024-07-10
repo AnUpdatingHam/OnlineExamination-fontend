@@ -119,8 +119,13 @@ export default{
   methods:{
     formatDateArrayToString(dateArray) {
       // 检查传入的数组是否具有6个元素
-      if (!dateArray || dateArray.length !== 6) {
-        throw new Error('日期数组必须包含6个元素：年、月、日、小时、分钟');
+      if (!dateArray || dateArray.length > 6) {
+        throw new Error('日期数组必须小于6个元素：年、月、日、小时、分钟');
+      }
+      if (dateArray.length < 6) {
+        for (let i = dateArray.length; i < 6; i++) {
+          dateArray.push(0)
+        }
       }
       // 解构数组元素
       const [year, month, day, hour, minute, second] = dateArray;
@@ -210,7 +215,9 @@ export default{
       this.historyData = ret.data.data.records
       this.historyData.forEach((item) => {
         let t;
+        console.log(item.createTime)
         item.createTime = this.formatDateArrayToString(item.createTime)
+        //console.log(item.createTime)
       })
       console.log("parms = ", queryParams, "ret = ", ret.data.data.records)
     } catch(error) {
