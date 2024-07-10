@@ -66,7 +66,7 @@ export default {
         const ret = await axios.get(`${constant.host}/user/user/${id}`)
         return ret.data.data
       } catch(error) {
-        console.error("")
+        console.error("Getting Data Error:", error)
       }
     }
   }
