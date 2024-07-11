@@ -9,7 +9,7 @@
       </div>
     </div>
     <div class="search">
-      <input type="text" placeholder="搜索" v-model="search">
+      <input type="text" placeholder="搜索" v-model="state.searchValue">
       <img src="../assets/search.png">
     </div>
   </div>
@@ -78,8 +78,9 @@ export default{
   data(){
     return{
       // options: ["资伍组","郑汉","震撼"],
+      timer: null,//延时器
+      displayData: [],
       active: -1,
-      search: '',
       state:{
         pageNum: 1,
         pageSize: 10,
@@ -167,41 +168,54 @@ export default{
         console.error("Getting Data Error:", error)
       }
     },
-
   },
-  computed:{
-    displayData(){
-      let data
-
-      if(this.active>-1){
-        let subjectData=[];
-        for(let i=0;i<this.historyData.length;i++)
-          if(this.options[this.active] === this.historyData[i].subject)
-            subjectData.push(this.historyData[i])
-        data=subjectData
-      }
-      else
-        data=this.historyData
-
-      if(this.search){
-        let searchData=[]
-        for(let i=0;i<data.length;i++)
-          for(let key in data[i]){
-            let it
-            if(typeof data[i][key] === "number")
-              it=String(data[i][key])
-            else
-              it=data[i][key]
-
-            if(it.includes(this.search)){
-              searchData.push(data[i])
-              break
-            }
+  computed: {
+    pageOrHistoryDataChanged() {
+      const {historyData, state} = this
+      return {historyData, state}
+    }
+  },
+  watch: {
+    pageOrHistoryDataChanged: {
+      deep: true,
+      handler() {
+        clearTimeout(this.timer)
+          this.timer = setTimeout(() => {
+          console.log("disp")
+          let data
+          if(this.active>-1){
+            let subjectData=[];
+            for(let i=0;i<this.historyData.length;i++)
+              if(this.options[this.active] === this.historyData[i].subject)
+                subjectData.push(this.historyData[i])
+            data=subjectData
           }
-            
-        data=searchData
+          else
+            data=this.historyData
+
+          if(this.state.searchValue){
+            let searchData=[]
+            for(let i=0;i<data.length;i++)
+              for(let key in data[i]){
+                let it
+                if(typeof data[i][key] === "number")
+                  it=String(data[i][key])
+                else
+                  it=data[i][key]
+
+                if(it.includes(this.state.searchValue)){
+                  searchData.push(data[i])
+                  break
+                }
+              }
+              
+            data=searchData
+            this.state.totalNumber = data.length
+          }
+          this.displayData = data.slice((this.state.pageNum-1)*this.state.pageSize , this.state.pageNum*this.state.pageSize)
+      }, 300)
       }
-      return data.slice((this.state.pageNum-1)*this.state.pageSize , this.state.pageNum*this.state.pageSize)
+      
     }
   },
   async created() {
@@ -209,17 +223,16 @@ export default{
       const queryParams = {
         username: "",
         page: 1,
-        pageSize: 10
+        pageSize: 1000
       }
       const ret = await axios.get(`${constant.host}/user/user/page`, {params: queryParams})
       this.historyData = ret.data.data.records
       this.historyData.forEach((item) => {
-        let t;
-        console.log(item.createTime)
         item.createTime = this.formatDateArrayToString(item.createTime)
         //console.log(item.createTime)
       })
-      console.log("parms = ", queryParams, "ret = ", ret.data.data.records)
+      this.displayData = this.historyData.slice(0, this.state.pageSize)
+      console.log("parms = ", queryParams, "displayData = ", this.displayData)
     } catch(error) {
       console.error("Getting Data Error:", error)
     }
