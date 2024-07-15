@@ -58,13 +58,14 @@
 <script>
 // 引入 Axios 库
 import axios from 'axios';
+import {store} from "@/stores/store";
 
 // 定义一个异步函数来发送 GET 请求
 async function getUser() {
   try {
     // 使用 Axios 发送 GET 请求
     //测试获取id为1的用户数据
-    const response = await axios.get('http://localhost:8080/user/user/1');
+    const response = await axios.get(`${store.host}/user/user/1`);
     // 请求成功，'response' 包含了请求的结果
     console.log(response.data); // 打印请求返回的数据
   } catch (error) {
@@ -87,7 +88,7 @@ const userData = {
 async function updateUser() {
   try {
     // 使用 Axios 发送 POST 请求，并包含 JSON 数据
-    const response = await axios.put('http://localhost:8080/user/user', userData, {
+    const response = await axios.put(`${store.host}/user/user`, userData, {
       // 设置请求头，指明内容类型为 JSON
       headers: {
         'Content-Type': 'application/json'
