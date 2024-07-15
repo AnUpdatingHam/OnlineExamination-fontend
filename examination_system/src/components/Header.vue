@@ -30,6 +30,11 @@ const collapseAside = () => {
 const LogOut = ()=>{
   store.login=false
   store.token=''
+  //清除cookies
+  $cookies.remove("id")
+  $cookies.remove("token")
+  $cookies.remove("username")
+  $cookies.remove("imageUrl")
 }
 
 const loginAppear=ref(false)
@@ -69,7 +74,12 @@ async function sendLoginRequest() {
       alert("登陆成功！")
 
       store.login=true
-      store.user = response.data.data
+      store.user = response.data.data//id、token、username、imageUrl
+      //保存到cookie
+      const userObjKeys = Object.keys(store.user)
+      for(let i = 0; i < userObjKeys.length; ++i) {
+        $cookies.set(userObjKeys[i], store.user[userObjKeys[i]])
+      }
 
       loginAppear.value=false
       console.log(store.user) //TODO: 打印日志，测试完毕可以删去
