@@ -1,44 +1,51 @@
 <template>
   <div class="page">
     <div class="page-wrapper">
-      <div class="header">
-        <div class="profile">
-          <p>头像:</p>
-          <img src="https://img2.baidu.com/it/u=749617030,3039814544&fm=253&fmt=auto&app=138&f=JPEG?w=400&h=400" alt="这是一张图片" height="100" width="100">
-        </div>
-        <div>
-          <el-button @click="toggleEdit" type="primary">更改头像</el-button>
-        </div>
-        <div>
-          <p>支持jpg、png、jpeg格式，尺寸120*120，最大1MB</p>
-        </div>
-      </div>
-
       <div class="body">
         <!-- 编辑界面 -->
-        <div class="edit-profile" v-if="isEditing">
+        <div class="edit-profile" v-if="isEditing && editingField === 'avatar'">
           <div class="edit-content">
-            <h3>编辑个人资料</h3>
-            <div class="close-button" @click="toggleEdit">X</div>
-            <!-- 这里可以添加更多的表单输入元素 -->
-            <el-input v-model="username" placeholder="请输入用户名"></el-input>
-            <el-input v-model="phone" placeholder="请输入手机号"></el-input>
-            <!-- 其他输入项... -->
-            <el-button @click="saveProfile" type="primary">保存</el-button>
+            <h3>编辑头像</h3>
+            <div class="close-button" @click="toggleEdit('avatar')">X</div>
+            <input type="file" accept="image/*" style="display: block" ref="fileInput" @change="handleAvatarChange">
+            <el-button @click="saveAvatar" type="primary">保存</el-button>
           </div>
         </div>
+
+        <!-- 编辑手机号界面 -->
+        <div class="edit-profile" v-if="isEditing && editingField === 'phone'">
+          <div class="edit-content">
+            <h3>编辑手机号</h3>
+            <div class="close-button" @click="toggleEdit('phone')">X</div>
+            <input type="text" v-model="phoneEdit">
+            <el-button @click="savePhone" type="primary">保存</el-button>
+          </div>
+        </div>
+
+        <!-- 编辑邮箱界面 -->
+        <div class="edit-profile" v-if="isEditing && editingField === 'email'">
+          <div class="edit-content">
+            <h3>编辑邮箱</h3>
+            <div class="close-button" @click="toggleEdit('email')">X</div>
+            <input type="text" v-model="emailEdit">
+            <el-button @click="saveEmail" type="primary">保存</el-button>
+          </div>
+        </div>
+
+        <!-- 显示界面 -->
         <div class="user-profile">
           <div class="container">
             <h2 class="title">用户个人中心</h2>
             <div class="profile-card">
-              <div class="avatar">
+              <div class="avatar" @click="toggleEdit('avatar')">
                 <img :src="imageUrl" alt="用户头像" class="avatar-img">
+                <span v-if="!isEditing">点击编辑</span>
               </div>
               <div class="info">
                 <h3 class="name">{{ username }}</h3>
                 <p>学号: {{ stuId }}</p>
-                <p>手机号: {{ phone }}</p>
-                <p>邮箱: {{ email }}</p>
+                <p class="editable" @click="toggleEdit('phone')">手机号: {{ phone }} <span class="edit-button">编辑</span></p>
+                <p class="editable" @click="toggleEdit('email')">邮箱: {{ email }} <span class="edit-button">编辑</span></p>
                 <p>创建时间: {{ formatDateTime(createTime) }}</p>
               </div>
             </div>
@@ -47,38 +54,140 @@
       </div>
     </div>
   </div>
-
 </template>
 
 <script>
-import {ElButton, ElInput} from 'element-plus';
+
+import { ElButton, ElMessage, ElLoading } from 'element-plus';
+import axios from 'axios';
 
 export default {
   name: 'UserProfile',
   components: {
     ElButton,
-    ElInput
   },
   data() {
     return {
-      // 假设的用户数据
-      isEditing: false, // 控制编辑界面显示隐藏
-      stuId: '20230101',
-      username: '张三',
-      phone: '13800138000',
-      email: 'zhangsan@example.com',
-      imageUrl: '/path/to/avatar.jpg',
-      createTime: '2023-07-14T10:00:00', // 示例时间
+      isEditing: false,
+      editingField: '',
+      stuId: '',
+      username: '',
+      phone: '',
+      email: '',
+      imageUrl: '',
+      createTime: '',
+      avatarFile: null,
+      phoneEdit: '',
+      emailEdit: '',
+      loading: null,
     };
   },
+  created() {
+    this.getUserProfile();
+  },
   methods: {
-    toggleEdit() {
-      this.isEditing = !this.isEditing;
+    async getUserProfile() {
+      this.showLoading('正在加载用户信息...');
+      try {
+        const response = await axios.get('/api/user/profile');
+        if (response.status === 200 && response.data) {
+          const data = response.data;
+          this.stuId = data.stuId || '';
+          this.username = data.username || '';
+          this.phone = data.phone || '';
+          this.email = data.email || '';
+          this.imageUrl = data.imageUrl || '';
+          this.createTime = data.createTime || '';
+        } else {
+          this.showMessage('获取用户信息失败', 'error');
+        }
+      } catch (error) {
+        console.error('获取用户信息失败', error);
+        this.showMessage('获取用户信息失败', 'error');
+      } finally {
+        this.closeLoading();
+      }
     },
-    saveProfile() {
-      // 这里可以添加保存用户资料的逻辑
-      console.log('保存用户资料', this.username, this.phone);
-      this.isEditing = false; // 保存后关闭编辑界面
+    toggleEdit(field) {
+      this.isEditing = true;
+      this.editingField = field;
+      if (field === 'phone') {
+        this.phoneEdit = this.phone;
+      } else if (field === 'email') {
+        this.emailEdit = this.email;
+      }
+    },
+    async saveAvatar() {
+      this.showLoading('正在保存头像...');
+      try {
+        let formData = new FormData();
+        formData.append('avatar', this.avatarFile);
+
+        const response = await axios.post('/api/user/update/avatar', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+
+        if (response.status === 200 && response.data) {
+          console.log('头像保存成功', response.data);
+          this.imageUrl = response.data.imageUrl;
+          this.isEditing = false;
+          this.showMessage('头像保存成功', 'success');
+        } else {
+          this.showMessage('保存头像失败', 'error');
+        }
+      } catch (error) {
+        console.error('保存头像失败', error);
+        this.showMessage('保存头像失败', 'error');
+      } finally {
+        this.closeLoading();
+      }
+    },
+    handleAvatarChange(event) {
+      this.avatarFile = event.target.files[0];
+    },
+    async savePhone() {
+      this.showLoading('正在保存手机号...');
+      try {
+        const response = await axios.post('/api/user/update/phone', { phone: this.phoneEdit });
+
+        if (response.status === 200 && response.data) {
+          console.log('手机号保存成功', response.data);
+          this.phone = this.phoneEdit;
+          this.isEditing = false;
+          this.editingField = '';
+          this.showMessage('手机号保存成功', 'success');
+        } else {
+          this.showMessage('保存手机号失败', 'error');
+        }
+      } catch (error) {
+        console.error('保存手机号失败', error);
+        this.showMessage('保存手机号失败', 'error');
+      } finally {
+        this.closeLoading();
+      }
+    },
+    async saveEmail() {
+      this.showLoading('正在保存邮箱...');
+      try {
+        const response = await axios.post('/api/user/update/email', { email: this.emailEdit });
+
+        if (response.status === 200 && response.data) {
+          console.log('邮箱保存成功', response.data);
+          this.email = this.emailEdit;
+          this.isEditing = false;
+          this.editingField = '';
+          this.showMessage('邮箱保存成功', 'success');
+        } else {
+          this.showMessage('保存邮箱失败', 'error');
+        }
+      } catch (error) {
+        console.error('保存邮箱失败', error);
+        this.showMessage('保存邮箱失败', 'error');
+      } finally {
+        this.closeLoading();
+      }
     },
     formatDateTime(dateTime) {
       const date = new Date(dateTime);
@@ -90,35 +199,33 @@ export default {
         minute: '2-digit',
         second: '2-digit',
       });
+    },
+    showLoading(text) {
+      this.loading = ElLoading.service({ text });
+    },
+    closeLoading() {
+      if (this.loading) this.loading.close();
+    },
+    showMessage(message, type) {
+      ElMessage({ message, type });
     }
   }
 };
 </script>
 
 <style scoped>
-.header{
-  width: 100%;
-  height: 30%;
-  background-color: #0bb4b0;
-  padding-bottom: 100px;
-}
 
-.profile{
-  display: flex;
-  align-items: center;
-}
-
-.profile p{
+.profile p {
   margin-right: 20px;
 }
 
-.page{
+.page {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.page-wrapper{
+.page-wrapper {
   width: 80%;
   align-items: center;
   justify-content: center;
@@ -126,11 +233,20 @@ export default {
 }
 
 .body {
-  display: flex;
-  width: 80%;
-  height: 95%;
-  align-items: center;
-  justify-content: center;
+  width: 90%;
+  margin: auto;
+  text-align: center; /* 调整文本居中 */
+}
+
+.user-profile {
+  width: 90%;
+  margin-top: 20px;
+}
+
+.container {
+  width: 90%;
+  max-width: 600px;
+  margin: auto;
 }
 
 .edit-profile {
@@ -161,8 +277,7 @@ export default {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  width: 80%;
-  height: 80%;
+  width: 100%;
   background-color: #f4f4f4;
 }
 
@@ -174,24 +289,28 @@ export default {
 
 .title {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
   color: #333;
 }
 
 .profile-card {
   background-color: #fff;
-  border-radius: 10px;
+  border-radius: 12px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  justify-content: center; /* 调整为居中对齐 */
+  align-items: center; /* 调整为居中对齐 */
+  margin: auto; /* 居中对齐 */
+  padding: 20px; /* 添加内边距 */
 }
 
 .avatar {
+  position: relative;
   width: 120px;
   height: 120px;
-  margin: 20px;
+  margin: 0 35px; /* 水平间距 */
+  cursor: pointer;
 }
 
 .avatar-img {
@@ -200,8 +319,28 @@ export default {
   border-radius: 50%;
 }
 
+.avatar span {
+  position: absolute;
+  bottom: 0;
+  left: 60%;
+  transform: translateX(-50%);
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 2px 4px;
+  border-radius: 6px;
+  font-size: 10px;
+  color: #333;
+  display: none;
+}
+
+.avatar:hover span {
+  display: block;
+}
+
 .info {
-  padding: 20px;
+  padding: 0 20px; /* 水平内边距 */
+  text-align: left;
+  flex-grow: 1;
+  margin-left: 40px; /* 右移 */
 }
 
 .info h3.name {
@@ -214,7 +353,30 @@ export default {
   color: #666;
 }
 
-@media (max-width: 768px) {
+.editable {
+  position: relative;
+  cursor: pointer;
+}
+
+.edit-button {
+  display: none;
+  color: #0bb4b0;
+  cursor: pointer;
+}
+
+.editable:hover .edit-button {
+  display: inline;
+}
+
+.edit-profile input[type="text"] {
+  width: calc(100% - 20px);
+  padding: 10px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+@media (max-width: 900px) {
   .profile-card {
     flex-direction: column;
     align-items: center;
@@ -222,6 +384,11 @@ export default {
 
   .avatar {
     margin-bottom: 20px;
+  }
+
+  .info {
+    padding: 25px;
+    text-align: center; /* 调整文本居中 */
   }
 }
 </style>
