@@ -210,9 +210,11 @@ export default{
               }
               
             data=searchData
-            this.state.totalNumber = data.length
+            
           }
+         
           this.displayData = data.slice((this.state.pageNum-1)*this.state.pageSize , this.state.pageNum*this.state.pageSize)
+          this.state.totalNumber = data.length
       }, 300)
       }
       
@@ -226,12 +228,11 @@ export default{
         pageSize: 1000
       }
       const ret = await axios.get(`${constant.host}/user/user/page`, {params: queryParams})
-      this.historyData = ret.data.data.records
+      this.historyData = ret.data.data.records//总数
       this.historyData.forEach((item) => {
         item.createTime = this.formatDateArrayToString(item.createTime)
         //console.log(item.createTime)
       })
-      this.displayData = this.historyData.slice(0, this.state.pageSize)
       console.log("parms = ", queryParams, "displayData = ", this.displayData)
     } catch(error) {
       console.error("Getting Data Error:", error)
