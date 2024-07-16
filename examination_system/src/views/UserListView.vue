@@ -1,6 +1,6 @@
 <template>
 
-  <!-- 展示的信息在displayData、所有的信息在historyData。主要区别在于是否经过搜索 -->
+  <!-- 当前页展示的信息在displayData、所有的信息在historyData。主要区别在于是否经过搜索或分页 -->
   <div class="find">
     <div class="select">
       <p>用户列表</p>
@@ -120,6 +120,7 @@ export default{
         searchValue: "",
         totalNumber: 24,    //n
       },
+      searchKeys: ["username", "stuId", "phone", "email", "createTime"],
       historyData:[         //n组数据
         {id: 1, stuId:123, username: '张璞',  phone:'12345', exam: '高考', avatarUrl: "https://tse1-mm.cn.bing.net/th/id/OIP-C.D9SyQRPpqDoTXRX0VRqJdAHaHa?w=206&h=208&c=7&r=0&o=5&dpr=1.4&pid=1.7", email:"123@exam.com", answer:'震撼', create_time: "2024.5.1"},
         {id: 2, stuId:123, username: '震撼',  phone:'12142', exam: '中考', avatarUrl: "https://tse1-mm.cn.bing.net/th/id/OIP-C.D9SyQRPpqDoTXRX0VRqJdAHaHa?w=206&h=208&c=7&r=0&o=5&dpr=1.4&pid=1.7", email:"123@exam.com", answer: '无', create_time: "2024.5.1"},
@@ -324,7 +325,7 @@ export default{
       deep: true,
       handler() {
         clearTimeout(this.timer)
-          this.timer = setTimeout(() => {
+        this.timer = setTimeout(() => {
           console.log("disp")
           let data
           if(this.active>-1){
@@ -339,14 +340,17 @@ export default{
 
           if(this.state.searchValue){
             let searchData=[]
+            
             for(let i=0;i<data.length;i++)
-              for(let key in data[i]){
+             
+              for(let key of this.searchKeys){
+                console.log(key)
                 let it
                 if(typeof data[i][key] === "number")
                   it=String(data[i][key])
                 else
                   it=data[i][key]
-
+                console.log(it)
                 if(it.includes(this.state.searchValue)){
                   searchData.push(data[i])
                   break
@@ -357,7 +361,8 @@ export default{
          
           this.displayData = data.slice((this.state.pageNum-1)*this.state.pageSize , this.state.pageNum*this.state.pageSize)
           this.state.totalNumber = data.length
-      }, 300)
+          console.log(data, this.displayData) 
+        }, 300)
       }
       
     }

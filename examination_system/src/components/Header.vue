@@ -27,15 +27,15 @@ const collapseAside = () => {
 }
 
 //清除用户信息cookies
-const removeCookies = ()=> {
-  $cookies.remove("id")
-  $cookies.remove("token")
-  $cookies.remove("username")
-  $cookies.remove("imageUrl")
+const removeCookies = () => {
+  const userObjKeys = Object.keys(store.user)
+  for(let i = 0; i < userObjKeys.length; ++i) {
+    $cookies.remove(userObjKeys[i])
+  }
 }
 
 //保存用户信息到cookie
-const setCookies = ()=> {
+const setCookies = () => {
   const userObjKeys = Object.keys(store.user)
   for(let i = 0; i < userObjKeys.length; ++i) {
     $cookies.set(userObjKeys[i], store.user[userObjKeys[i]])
@@ -78,7 +78,7 @@ const login = ()=>{
 async function sendLoginRequest() {
   try {
     // 使用 Axios 发送 POST 请求，并包含 JSON 数据
-    const response = await axios.post(`${constant.host}/user/user/login`,
+    const responseLogin = await axios.post(`${constant.host}/user/user/login`,
         bodyParams(),
         {
           // 设置请求头，指明内容类型为 JSON
@@ -86,12 +86,13 @@ async function sendLoginRequest() {
             'Content-Type': 'application/json'
           }
         });
-    if(response.data.code===1){
+    if(responseLogin.data.code===1){
       ElMessage.success("登陆成功")
 
       store.login=true
-      store.user = response.data.data//id、token、username、imageUrl
-
+      
+      const responseInfo = await axios.get(`${constant.host}/user/user/${responseLogin.data.data.id}`);
+      store.user = responseInfo.data.data
       loginAppear.value=false
       console.log(store.user) //TODO: 打印日志，测试完毕可以删去
     }
@@ -135,7 +136,7 @@ async function sendLoginRequest() {
             <el-dropdown-menu>
               <el-dropdown-item>View</el-dropdown-item>
               <el-dropdown-item>Add</el-dropdown-item>
-              <el-dropdown-item @click="LogOut">退出登录</el-dropdown-item>
+              <el-dropdown-item @click="LogOut();goToPaper()">退出登录</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>

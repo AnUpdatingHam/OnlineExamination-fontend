@@ -8,7 +8,19 @@ import Header from '@/components/Header.vue'
 import Aside from '@/components/Aside.vue'
 import {store} from "@/stores/store";
 
-
+const readCookies = () => {
+  const keys = ["id", "stuId", "username", "phone", "email", "imageUrl", "createTime"]
+  let userCk = {id : null, stuId : null, username : null, phone : null, email : null, imageUrl : null, createTime : null}
+  for(let key of keys) {
+    userCk[key] = $cookies.get(key)
+  }
+  if(userCk["id"]) {
+    store.user = userCk
+    store.login=true
+    console.log("读取cookie成功, store.user = ", store.user)
+  }
+  else console.log("读取cookie失败或没有cookie, idCk = ", userCk["id"])
+}
 
 const asideSettings = ref({
     isCollapse:true,
@@ -25,21 +37,8 @@ const changeAside = ()=>{
    }
 }
 
-  let idCk = $cookies.get("id")
-  let tokenCk = $cookies.get("token")
-  let usernameCk = $cookies.get("username")
-  let imageUrlCk = $cookies.get("imageUrl")
-  if(idCk) {
-    store.user = {
-      id: idCk,
-      username: usernameCk,
-      token: tokenCk,
-      imageUrl: imageUrlCk
-    }
-    store.login=true
-    console.log("读取cookie成功, store.user = ", store.user)
-  }
-  else console.log("读取cookie失败或没有cookie, idCk = ", idCk)
+//读取用户cookies
+readCookies()
 
 </script>
 <template>
