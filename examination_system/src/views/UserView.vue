@@ -46,7 +46,7 @@
                 <p>学号: {{ store.user.stuId }}</p>
                 <p class="editable" @click="toggleEdit('phone')">手机号: {{ store.user.phone }} <span class="edit-button">编辑</span></p>
                 <p class="editable" @click="toggleEdit('email')">邮箱: {{ store.user.email }} <span class="edit-button">编辑</span></p>
-                <p>创建时间: {{ formatDateTime(store.user.createTime) }}</p>
+                <p>创建时间: {{ formatDateArrayToString(store.user.createTime) }}</p>
               </div>
             </div>
           </div>
@@ -78,9 +78,6 @@ export default {
       editingField: '',
       stuId: '',
       username: '',
-      phone: '',
-      email: '',
-      imageUrl: '',
       createTime: '',
       avatarFile: null,
       phoneEdit: '',
@@ -114,7 +111,7 @@ export default {
 
         if (response.status === 200 && response.data) {
           console.log('头像保存成功', response.data);
-          this.imageUrl = response.data.imageUrl;
+          store.user.imageUrl = response.data.imageUrl;//改到store.user
           this.isEditing = false;
           this.showMessage('头像保存成功', 'success');
         } else {
@@ -137,7 +134,7 @@ export default {
 
         if (response.status === 200 && response.data) {
           console.log('手机号保存成功', response.data);
-          this.phone = this.phoneEdit;
+          store.user.phone = this.phoneEdit;//改到store.user
           this.isEditing = false;
           this.editingField = '';
           this.showMessage('手机号保存成功', 'success');
@@ -158,7 +155,7 @@ export default {
 
         if (response.status === 200 && response.data) {
           console.log('邮箱保存成功', response.data);
-          this.email = this.emailEdit;
+          store.user.email = this.emailEdit;//改到store.user
           this.isEditing = false;
           this.editingField = '';
           this.showMessage('邮箱保存成功', 'success');
@@ -172,16 +169,28 @@ export default {
         this.closeLoading();
       }
     },
-    formatDateTime(dateTime) {
-      const date = new Date(dateTime);
-      return date.toLocaleDateString('zh-CN', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-      });
+    formatDateArrayToString(dateArray) {
+      // 检查传入的数组是否具有6个元素
+      if (!dateArray || dateArray.length > 6) {
+        ElMessage.error("日期数组必须小于6个元素：年、月、日、小时、分钟")
+        throw new Error('日期数组必须小于6个元素：年、月、日、小时、分钟');
+      }
+      if (dateArray.length < 6) {
+        for (let i = dateArray.length; i < 6; i++) {
+          dateArray.push(0)
+        }
+      }
+      // 解构数组元素
+      const [year, month, day, hour, minute, second] = dateArray;
+
+      // 使用padStart方法确保月、日、小时和分钟是两位数格式
+      const formattedMonth = String(month).padStart(2, '0');
+      const formattedDay = String(day).padStart(2, '0');
+      const formattedHour = String(hour).padStart(2, '0');
+      const formattedMinute = String(minute).padStart(2, '0');
+
+      // 组合成最终的日期时间字符串
+      return `${year}-${formattedMonth}-${formattedDay} ${formattedHour}:${formattedMinute}`;
     },
     showLoading(text) {
       this.loading = ElLoading.service({ text });
