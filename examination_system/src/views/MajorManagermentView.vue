@@ -3,23 +3,17 @@
   <!-- 当前页展示的信息在displayData、所有的信息在historyData。主要区别在于是否经过搜索或分页 -->
   <div class="find">
     <div class="select">
-      <p>考试列表</p>
+      <p>专业列表</p>
       <div class="select-opt" :class="{'active':active===-1}" @click=switchActive2()>震撼-资伍组</div>
       <div class="select-opt" v-for="(opt,index) in options" :key="index" :class="{'active':active===index}" @click="switchActive(index)">
         {{ opt }}
       </div>
     </div>
-    <el-dialog :title="isAdd ? '添加考试' : '修改考试'" v-model="addDialogVisible" width="50%" @close="addDialogClosed">
+    <el-dialog :title="isAdd ? '添加专业' : '修改专业'" v-model="addDialogVisible" width="50%" @close="addDialogClosed">
       <!-- 内容主体区 -->
-      <el-form :model="addPaperForm" :rules="addPaperFormRules" ref="addPaperFormRef" label-width="70px">
-        <el-form-item label="考试名称" prop="name"> <!-- prop是验证规则属性 -->
-          <el-input v-model="addPaperForm.name" @input="change($event)"></el-input>
-        </el-form-item>
-        <el-form-item label="起始时间" prop="beginTime"> <!-- prop是验证规则属性 -->
-          <el-input v-model="addPaperForm.beginTime" @input="change($event)"></el-input>
-        </el-form-item>
-        <el-form-item label="结束时间" prop="endTime">
-          <el-input v-model="addPaperForm.endTime" @input="change($event)"></el-input>
+      <el-form :model="addMajorForm" :rules="addMajorFormRules" ref="addMajorFormRef" label-width="70px">
+        <el-form-item label="专业名称" prop="name"> <!-- prop是验证规则属性 -->
+          <el-input v-model="addMajorForm.name" @input="change($event)"></el-input>
         </el-form-item>
       </el-form>
       <!--底部区-->
@@ -30,7 +24,7 @@
     </el-dialog>
 
     <el-col :span="4">
-      <el-button type="primary" @click="handleAdd">添加考试</el-button>
+      <el-button type="primary" @click="handleAdd">添加专业</el-button>
     </el-col>
     <div class="search">
       <input type="text" placeholder="搜索" v-model="state.searchValue">
@@ -41,17 +35,13 @@
   <table>
     <thead>
       <tr>
-        <th>考试名称</th>
-        <th>起始时间</th>
-        <th>结束时间</th>
+        <th>专业名称</th>
         <th>操作</th>
       </tr>
     </thead>
     <tbody>
       <tr v-for="(item,index) in displayData" :key="item.id">
         <td>{{ item.name }}</td>
-        <td>{{ item.beginTime }}</td>
-        <td>{{ item.endTime }}</td>
 
         <td>
           <a href="#" @click.prevent="handleEditing(index)" style="color: #87CEFA;">
@@ -63,7 +53,7 @@
           <span>&nbsp;</span> <!-- 添加一个空格 -->
           <span>&nbsp;</span> <!-- 添加一个空格 -->
           <span>&nbsp;</span> <!-- 添加一个空格 -->
-          <a href="#" @click="deletePaper(item.id)" style="color: #87CEFA;">
+          <a href="#" @click="deleteMajor(item.id)" style="color: #87CEFA;">
             <img src="../assets/delete3.png" alt="Delete" width="16" height="16"> 删除
           </a>
         </td>
@@ -108,14 +98,12 @@ export default{
         searchValue: "",
         totalNumber: 24,    //n
       },
-      searchKeys: ["name", "beginTime", "endTime"],
+      searchKeys: ["name"],
       historyData: [],
       addDialogVisible: false, //控制添加对话框的显示与隐藏
-      addPaperForm:{},
-      addPaperFormRules: {
-        name:[{required:true,message:'请输入考试名称',trigger:'blur'}],
-        term: [{required:true,message:'请输入起始时间',trigger:'blur'}],
-        admins: [{required:true,message:'请输入结束时间',trigger:'blur'}],
+      addMajorForm:{},
+      addMajorFormRules: {
+        name:[{required:true,message:'请输入专业名称',trigger:'blur'}],
       },
       change(e){
         this.$forceUpdate()
@@ -126,7 +114,7 @@ export default{
     handleEditing(index, event){
       this.addDialogVisible = true
       this.isAdd = false
-      this.addPaperForm = this.displayData[index]
+      this.addMajorForm = this.displayData[index]
     },
     handleAdd(event){
       this.addDialogVisible = true
@@ -149,59 +137,32 @@ export default{
     },
     //监听添加用户对话框的关闭状态
     addDialogClosed(){
-      this.$refs.addPaperFormRef.resetFields();
-      this.getPaperList()
+      this.$refs.addMajorFormRef.resetFields();
+      this.getMajorList()
     },
     handleSubmit(){
       if(this.isAdd)
         this.addPaper()
-      else this.updateExam()
+      else this.updateMajor()
     },
-    formatDateArrayToString(dateArray) {
-      // 检查传入的数组是否具有6个元素
-      if (!dateArray || dateArray.length > 6) {
-        ElMessage.error("日期数组必须小于6个元素：年、月、日、小时、分钟")
-        throw new Error('日期数组必须小于6个元素：年、月、日、小时、分钟');
-      }
-      if (dateArray.length < 6) {
-        for (let i = dateArray.length; i < 6; i++) {
-          dateArray.push(0)
-        }
-      }
-      // 解构数组元素
-      const [year, month, day, hour, minute, second] = dateArray;
-
-      // 使用padStart方法确保月、日、小时和分钟是两位数格式
-      const formattedMonth = String(month).padStart(2, '0');
-      const formattedDay = String(day).padStart(2, '0');
-      const formattedHour = String(hour).padStart(2, '0');
-      const formattedMinute = String(minute).padStart(2, '0');
-
-      // 组合成最终的日期时间字符串
-      return `${year}-${formattedMonth}-${formattedDay} ${formattedHour}:${formattedMinute}`;
-    },
-    async getPaperList(){
+    async getMajorList(){
       try {
         const queryParams = {
           page: 1,
           pageSize: 1000
         }
-        const ret = await axios.get(`${constant.host}/user/exam/page`, {params: queryParams})
+        const ret = await axios.get(`${constant.host}/user/major/page`, {params: queryParams})
         if(ret.data.code != 1){
           ElMessage.error(ret.data.msg)
         }
         this.historyData = ret.data.data.records//总数
-        this.historyData.forEach((item) => {
-          item.beginTime = this.formatDateArrayToString(item.beginTime)
-          item.endTime = this.formatDateArrayToString(item.endTime)
-        })
       } catch(error) {
         ElMessage.error(error)
       }
     },
     // 点击按钮，添加新用户
     async addPaper(){
-      await this.$refs.addPaperFormRef.validate(async valid =>{
+      await this.$refs.addMajorFormRef.validate(async valid =>{
         if(!valid) return;//校验没通过，返回
         try {
           const headersConfig = {
@@ -210,7 +171,7 @@ export default{
               'Token': `${store.user.token}` // 通常Token以Bearer开头
             }
           }
-          const ret = await axios.post(`${constant.host}/user/exam`, this.addPaperForm, headersConfig)
+          const ret = await axios.post(`${constant.host}/user/major`, this.addMajorForm, headersConfig)
           if(ret.data.code != 1){
             ElMessage.error(ret.data.msg)
           }
@@ -219,15 +180,15 @@ export default{
             ElMessage.success("添加成功")
             this.addDialogVisible = false;
             //重新获取用户列表数据
-            this.getPaperList();
+            this.getMajorList();
           }
         } catch(error) {
           ElMessage.error(error)
         }
       })
     },
-    async updateExam() {
-      await this.$refs.addPaperFormRef.validate(async valid =>{
+    async updateMajor() {
+      await this.$refs.addMajorFormRef.validate(async valid =>{
         if(!valid) return;//校验没通过，返回
         try {
           const headersConfig = {
@@ -236,7 +197,7 @@ export default{
               'Token': `${store.user.token}` // 通常Token以Bearer开头
             }
           }
-          const ret = await axios.put(`${constant.host}/user/exam`, this.addPaperForm, headersConfig)
+          const ret = await axios.put(`${constant.host}/user/major`, this.addMajorForm, headersConfig)
           if(ret.data.code != 1){
             ElMessage.error(ret.data.msg)
           }
@@ -245,7 +206,7 @@ export default{
             ElMessage.success("修改成功")
             this.addDialogVisible = false;
             //重新获取用户列表数据
-            this.getPaperList();
+            this.getMajorList();
             
           }
         } catch(error) {
@@ -253,7 +214,7 @@ export default{
         }
       })
     },
-    async deletePaper(targetId) {
+    async deleteMajor(targetId) {
       try {
         const headersConfig = {
           headers: {
@@ -261,7 +222,7 @@ export default{
             'Token': `${store.user.token}` // 通常Token以Bearer开头
           }
         }
-        const ret = await axios.delete(`${constant.host}/user/exam/${targetId}`, headersConfig)
+        const ret = await axios.delete(`${constant.host}/user/major/${targetId}`, headersConfig)
         console.log(JSON.stringify(ret))
         this.historyData = this.historyData.filter((item) => item.id != targetId)
       } catch(error) {
@@ -320,7 +281,7 @@ export default{
     }
   },
   async created() {
-    await this.getPaperList()
+    await this.getMajorList()
   }
 }
 </script>
