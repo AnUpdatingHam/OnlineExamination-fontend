@@ -12,8 +12,8 @@
     <el-dialog :title="isAdd ? '添加试题' : '修改试题'" v-model="addDialogVisible" width="50%" @close="addDialogClosed">
       <!-- 内容主体区 -->
       <el-form :model="addQuestionFrom" :rules="addQuestionFromRules" ref="addQuestionFromRef" label-width="70px">
-        <el-form-item label="试题概览" prop="overview"> <!-- prop是验证规则属性 -->
-          <el-input v-model="addQuestionFrom.overview" @input="change($event)"></el-input>
+        <el-form-item label="试题概览" prop="text"> <!-- prop是验证规则属性 -->
+          <el-input v-model="addQuestionFrom.text" @input="change($event)"></el-input>
         </el-form-item>
         <el-form-item label="题型" prop="type"> <!-- prop是验证规则属性 -->
           <el-input v-model="addQuestionFrom.type" @input="change($event)"></el-input>
@@ -21,7 +21,7 @@
         <el-form-item label="候选答案" prop="candidateAns">
           <el-input v-model="addQuestionFrom.candidateAns" @input="change($event)"></el-input>
         </el-form-item>
-        <el-form-item label="图片" prop="rightAns">
+        <el-form-item label="正确答案" prop="candidateAns">
           <el-input v-model="addQuestionFrom.rightAns" @input="change($event)"></el-input>
         </el-form-item>
       </el-form>
@@ -47,6 +47,8 @@
         <th>试题概览</th>
         <th>题型</th>
         <th>图片</th>
+        <th>候选答案</th>
+        <th>正确答案</th>
         <th>操作</th>
       </tr>
     </thead>
@@ -55,7 +57,8 @@
         <td>{{ item.text }}</td>
         <td>{{ item.type }}</td>
         <td class="img-td"><img :src="item.imageUrls != null ? item.imageUrls : 'https://dimg04.c-ctrip.com/images/zc0a170000011f8t5F2C8.jpg'" alt="试题图片"></td>
-
+        <td>{{ item.candidateAns }}</td>
+        <td>{{ item.rightAns }}</td>
         <td>
           <a href="#" @click.prevent="handleEditing(index)" style="color: #87CEFA;">
             <img src="../assets/xiu_gai2.png" alt="Edit" width="16" height="16"> 修改
@@ -98,9 +101,9 @@ import { ElMessage } from 'element-plus';
 export default{
   data(){
     return{
-      // options: ["资伍组","郑汉","震撼"],
+      // options: ["资伍组","郑汉","震撼"], 
       timer: null,//延时器
-      displayData: [],
+      displayData: [{text:"题干", type:'题型', imageUrls:'https://q3.itc.cn/q_70/images03/20240519/1b4e7565b46241b68288ae482412a866.jpeg', candidateAns:"123", rightAns:"123"}],
       active: -1,
       isAdd: false,
       state:{
@@ -111,8 +114,8 @@ export default{
         searchValue: "",
         totalNumber: 24,    //n
       },
-      searchKeys: ["text", "type", "imageUrls"],
-      historyData: [],
+      searchKeys: ["text", "type", "imageUrls", "candidateAns"],
+      historyData: [{text:"题干", type:'题型', imageUrls:'https://q3.itc.cn/q_70/images03/20240519/1b4e7565b46241b68288ae482412a866.jpeg', candidateAns:"123", rightAns:"123"}],
       addDialogVisible: false, //控制添加对话框的显示与隐藏
       addQuestionFrom:{},
       addQuestionFromRules: {
@@ -154,7 +157,7 @@ export default{
     //监听添加用户对话框的关闭状态
     addDialogClosed(){
       this.$refs.addQuestionFromRef.resetFields();
-      this.getQuestionList()
+      // this.getQuestionList()
     },
     handleSubmit(){
       if(this.isAdd)
@@ -222,7 +225,7 @@ export default{
             ElMessage.success("修改成功")
             this.addDialogVisible = false;
             //重新获取用户列表数据
-            this.getQuestionList();
+            // this.getQuestionList();
             
           }
         } catch(error) {
@@ -297,7 +300,7 @@ export default{
     }
   },
   async created() {
-    await this.getQuestionList()
+    // await this.getQuestionList()
   }
 }
 </script>
