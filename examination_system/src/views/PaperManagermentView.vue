@@ -3,23 +3,23 @@
   <!-- 当前页展示的信息在displayData、所有的信息在historyData。主要区别在于是否经过搜索或分页 -->
   <div class="find">
     <div class="select">
-      <p>课群列表</p>
+      <p>考试列表</p>
       <div class="select-opt" :class="{'active':active===-1}" @click=switchActive2()>震撼-资伍组</div>
       <div class="select-opt" v-for="(opt,index) in options" :key="index" :class="{'active':active===index}" @click="switchActive(index)">
         {{ opt }}
       </div>
     </div>
-    <el-dialog :title="isAdd ? '添加课群' : '修改课群'" v-model="addDialogVisible" width="50%" @close="addDialogClosed">
+    <el-dialog :title="isAdd ? '添加考试' : '修改考试'" v-model="addDialogVisible" width="50%" @close="addDialogClosed">
       <!-- 内容主体区 -->
-      <el-form :model="addTeamForm" :rules="addTeamFormRules" ref="addTeamFormRef" label-width="70px">
-        <el-form-item label="课群名称" prop="name"> <!-- prop是验证规则属性 -->
-          <el-input v-model="addTeamForm.name" @input="change($event)"></el-input>
+      <el-form :model="addPaperForm" :rules="addPaperFormRules" ref="addPaperFormRef" label-width="70px">
+        <el-form-item label="考试名称" prop="name"> <!-- prop是验证规则属性 -->
+          <el-input v-model="addPaperForm.name" @input="change($event)"></el-input>
         </el-form-item>
-        <el-form-item label="学期" prop="term"> <!-- prop是验证规则属性 -->
-          <el-input v-model="addTeamForm.term" @input="change($event)"></el-input>
+        <el-form-item label="起始时间" prop="beginTime"> <!-- prop是验证规则属性 -->
+          <el-input v-model="addPaperForm.beginTime" @input="change($event)"></el-input>
         </el-form-item>
-        <el-form-item label="管理员" prop="admins">
-          <el-input v-model="addTeamForm.admins" @input="change($event)"></el-input>
+        <el-form-item label="结束时间" prop="endTime">
+          <el-input v-model="addPaperForm.endTime" @input="change($event)"></el-input>
         </el-form-item>
       </el-form>
       <!--底部区-->
@@ -30,7 +30,7 @@
     </el-dialog>
 
     <el-col :span="4">
-      <el-button type="primary" @click="handleAdd">添加课群</el-button>
+      <el-button type="primary" @click="handleAdd">添加考试</el-button>
     </el-col>
     <div class="search">
       <input type="text" placeholder="搜索" v-model="state.searchValue">
@@ -41,17 +41,17 @@
   <table>
     <thead>
       <tr>
-        <th>课群名称</th>
-        <th>学期</th>
-        <th>管理员</th>
+        <th>考试名称</th>
+        <th>起始时间</th>
+        <th>结束时间</th>
         <th>操作</th>
       </tr>
     </thead>
     <tbody>
       <tr v-for="(item,index) in displayData" :key="item.id">
         <td>{{ item.name }}</td>
-        <td>{{ item.term }}</td>
-        <td>{{ item.admins }}</td>
+        <td>{{ item.beginTime }}</td>
+        <td>{{ item.endTime }}</td>
 
         <td>
           <a href="#" @click.prevent="handleEditing(index)" style="color: #87CEFA;">
@@ -63,7 +63,7 @@
           <span>&nbsp;</span> <!-- 添加一个空格 -->
           <span>&nbsp;</span> <!-- 添加一个空格 -->
           <span>&nbsp;</span> <!-- 添加一个空格 -->
-          <a href="#" @click="deleteTeam(item.id)" style="color: #87CEFA;">
+          <a href="#" @click="deletePaper(item.id)" style="color: #87CEFA;">
             <img src="../assets/delete3.png" alt="Delete" width="16" height="16"> 删除
           </a>
         </td>
@@ -108,48 +108,14 @@ export default{
         searchValue: "",
         totalNumber: 24,    //n
       },
-      searchKeys: ["name", "term", "admins"],
-      historyData: [
-        {
-          //id: ???
-          term: '2024-2025',
-          name: '计算机科学导论',
-          admins: '张璞',
-          //添加图片为背景
-          backgroundImg: constant.backgroundImg[1]
-        },
-        {
-          term: '2024-2025',
-          name: '数据结构与算法',
-          admins: '震撼',
-          backgroundImg: constant.backgroundImg[2]
-        },
-        {
-          term: '2024-2025',
-          name: '数据库原理',
-          admins: '王琦',
-          backgroundImg: constant.backgroundImg[3]
-        },
-        {
-          term: '2024-2025',
-          name: '操作系统',
-          admins: '李白',
-          backgroundImg: constant.backgroundImg[4]
-        },
-        {
-          term: '2024-2025',
-          name: '人工智能基础',
-          admins: '张无忌',
-          backgroundImg: constant.backgroundImg[5]
-        },
-        // 新添加的课程对象
-      ],
-      addDialogVisible: false, //控制添加用户对话框的显示与隐藏
-      addTeamForm:{},
-      addTeamFormRules: {
-        name:[{required:true,message:'请输入课程名称',trigger:'blur'}],
-        term: [{required:true,message:'请输入学期',trigger:'blur'}],
-        admins: [{required:true,message:'请输入课群管理员',trigger:'blur'}],
+      searchKeys: ["name", "beginTime", "endTime"],
+      historyData: [],
+      addDialogVisible: false, //控制添加对话框的显示与隐藏
+      addPaperForm:{},
+      addPaperFormRules: {
+        name:[{required:true,message:'请输入考试名称',trigger:'blur'}],
+        term: [{required:true,message:'请输入起始时间',trigger:'blur'}],
+        admins: [{required:true,message:'请输入结束时间',trigger:'blur'}],
       },
       change(e){
         this.$forceUpdate()
@@ -160,7 +126,7 @@ export default{
     handleEditing(index, event){
       this.addDialogVisible = true
       this.isAdd = false
-      this.addTeamForm = this.displayData[index]
+      this.addPaperForm = this.displayData[index]
     },
     handleAdd(event){
       this.addDialogVisible = true
@@ -183,34 +149,59 @@ export default{
     },
     //监听添加用户对话框的关闭状态
     addDialogClosed(){
-      this.$refs.addTeamFormRef.resetFields();
-      this.getTeamList()
+      this.$refs.addPaperFormRef.resetFields();
+      this.getPaperList()
     },
     handleSubmit(){
       if(this.isAdd)
-        this.addTeam()
-      else this.updateTeam()
+        this.addPaper()
+      else this.updateExam()
     },
-    async getTeamList(){
+    formatDateArrayToString(dateArray) {
+      // 检查传入的数组是否具有6个元素
+      if (!dateArray || dateArray.length > 6) {
+        ElMessage.error("日期数组必须小于6个元素：年、月、日、小时、分钟")
+        throw new Error('日期数组必须小于6个元素：年、月、日、小时、分钟');
+      }
+      if (dateArray.length < 6) {
+        for (let i = dateArray.length; i < 6; i++) {
+          dateArray.push(0)
+        }
+      }
+      // 解构数组元素
+      const [year, month, day, hour, minute, second] = dateArray;
+
+      // 使用padStart方法确保月、日、小时和分钟是两位数格式
+      const formattedMonth = String(month).padStart(2, '0');
+      const formattedDay = String(day).padStart(2, '0');
+      const formattedHour = String(hour).padStart(2, '0');
+      const formattedMinute = String(minute).padStart(2, '0');
+
+      // 组合成最终的日期时间字符串
+      return `${year}-${formattedMonth}-${formattedDay} ${formattedHour}:${formattedMinute}`;
+    },
+    async getPaperList(){
       try {
         const queryParams = {
-          userId: store.user.id,
-          keyword: '',
           page: 1,
           pageSize: 1000
         }
-        const ret = await axios.get(`${constant.host}/user/team/page`, {params: queryParams})
+        const ret = await axios.get(`${constant.host}/user/exam/page`, {params: queryParams})
         if(ret.data.code != 1){
           ElMessage.error(ret.data.msg)
         }
         this.historyData = ret.data.data.records//总数
+        this.historyData.forEach((item) => {
+          item.beginTime = this.formatDateArrayToString(item.beginTime)
+          item.endTime = this.formatDateArrayToString(item.endTime)
+        })
       } catch(error) {
         ElMessage.error(error)
       }
     },
     // 点击按钮，添加新用户
-    async addTeam(){
-      await this.$refs.addTeamFormRef.validate(async valid =>{
+    async addPaper(){
+      await this.$refs.addPaperFormRef.validate(async valid =>{
         if(!valid) return;//校验没通过，返回
         try {
           const headersConfig = {
@@ -219,7 +210,7 @@ export default{
               'Token': `${store.user.token}` // 通常Token以Bearer开头
             }
           }
-          const ret = await axios.post(`${constant.host}/user/team`, this.addTeamForm, headersConfig)
+          const ret = await axios.post(`${constant.host}/user/exam`, this.addPaperForm, headersConfig)
           if(ret.data.code != 1){
             ElMessage.error(ret.data.msg)
           }
@@ -228,15 +219,15 @@ export default{
             ElMessage.success("添加成功")
             this.addDialogVisible = false;
             //重新获取用户列表数据
-            this.getTeamList();
+            this.getPaperList();
           }
         } catch(error) {
           ElMessage.error(error)
         }
       })
     },
-    async updateTeam() {
-      await this.$refs.addTeamFormRef.validate(async valid =>{
+    async updateExam() {
+      await this.$refs.addPaperFormRef.validate(async valid =>{
         if(!valid) return;//校验没通过，返回
         try {
           const headersConfig = {
@@ -245,7 +236,7 @@ export default{
               'Token': `${store.user.token}` // 通常Token以Bearer开头
             }
           }
-          const ret = await axios.put(`${constant.host}/user/team`, this.addTeamForm, headersConfig)
+          const ret = await axios.put(`${constant.host}/user/exam`, this.addPaperForm, headersConfig)
           if(ret.data.code != 1){
             ElMessage.error(ret.data.msg)
           }
@@ -254,7 +245,7 @@ export default{
             ElMessage.success("修改成功")
             this.addDialogVisible = false;
             //重新获取用户列表数据
-            this.getTeamList();
+            this.getPaperList();
             
           }
         } catch(error) {
@@ -262,7 +253,7 @@ export default{
         }
       })
     },
-    async deleteTeam(targetId) {
+    async deletePaper(targetId) {
       try {
         const headersConfig = {
           headers: {
@@ -270,7 +261,7 @@ export default{
             'Token': `${store.user.token}` // 通常Token以Bearer开头
           }
         }
-        const ret = await axios.delete(`${constant.host}/Team/Team/${targetId}`, headersConfig)
+        const ret = await axios.delete(`${constant.host}/user/exam/${targetId}`, headersConfig)
         console.log(JSON.stringify(ret))
         this.historyData = this.historyData.filter((item) => item.id != targetId)
       } catch(error) {
@@ -329,7 +320,7 @@ export default{
     }
   },
   async created() {
-    await this.getTeamList()
+    await this.getPaperList()
   }
 }
 </script>
