@@ -38,15 +38,15 @@
             <h2 class="title">用户个人中心</h2>
             <div class="profile-card">
               <div class="avatar" @click="toggleEdit('avatar')">
-                <img :src="imageUrl" alt="用户头像" class="avatar-img">
+                <img :src="store.user.imageUrl" alt="用户头像" class="avatar-img">
                 <span v-if="!isEditing">点击编辑</span>
               </div>
               <div class="info">
-                <h3 class="name">{{ username }}</h3>
-                <p>学号: {{ stuId }}</p>
-                <p class="editable" @click="toggleEdit('phone')">手机号: {{ phone }} <span class="edit-button">编辑</span></p>
-                <p class="editable" @click="toggleEdit('email')">邮箱: {{ email }} <span class="edit-button">编辑</span></p>
-                <p>创建时间: {{ formatDateTime(createTime) }}</p>
+                <h3 class="name">{{ store.user.username }}</h3>
+                <p>学号: {{ store.user.stuId }}</p>
+                <p class="editable" @click="toggleEdit('phone')">手机号: {{ store.user.phone }} <span class="edit-button">编辑</span></p>
+                <p class="editable" @click="toggleEdit('email')">邮箱: {{ store.user.email }} <span class="edit-button">编辑</span></p>
+                <p>创建时间: {{ formatDateTime(store.user.createTime) }}</p>
               </div>
             </div>
           </div>
@@ -60,9 +60,15 @@
 
 import { ElButton, ElMessage, ElLoading } from 'element-plus';
 import axios from 'axios';
+import {store} from "../stores/store";
 
 export default {
   name: 'UserProfile',
+  computed: {
+    store() {
+      return store
+    }
+  },
   components: {
     ElButton,
   },
