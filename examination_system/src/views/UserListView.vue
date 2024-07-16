@@ -1,5 +1,6 @@
 <template>
 
+  <!-- 展示的信息在displayData、所有的信息在historyData。主要区别在于是否经过搜索 -->
   <div class="find">
     <div class="select">
       <p>用户列表</p>
@@ -38,7 +39,7 @@
       <el-button type="primary" @click="handleAdd">添加用户</el-button>
     </el-col>
     <div class="search">
-      <input type="text" placeholder="搜索" v-model="search">
+      <input type="text" placeholder="搜索" v-model="state.searchValue">
       <img src="../assets/search.png">
     </div>
   </div>
@@ -165,7 +166,7 @@ export default{
     handleEditing(index, event){
       this.addDialogVisible = true
       this.isAdd = false
-      this.addUserForm = this.historyData[index]
+      this.addUserForm = this.displayData[index]
     },
     handleAdd(event){
       this.addDialogVisible = true
@@ -282,9 +283,14 @@ export default{
           else{
             // 隐藏添加用户的对话框
             ElMessage.success("修改成功")
+            //如果修改当前登录账号的影响显示的信息，更新登录信息
+            if(this.addUserForm.id == store.user.id && (this.addUserForm.username != store.user.username)) {
+              store.user.username = this.addUserForm.username
+            }
             this.addDialogVisible = false;
             //重新获取用户列表数据
             this.getUserList();
+            
           }
         } catch(error) {
           ElMessage.error(error)

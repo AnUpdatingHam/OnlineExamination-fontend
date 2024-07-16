@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, watch} from 'vue';
 
 import { ElMessage } from 'element-plus';
 
@@ -26,15 +26,31 @@ const collapseAside = () => {
   emit('changeAside')
 }
 
-// 登出按钮
-const LogOut = ()=>{
-  store.login=false
-  store.token=''
-  //清除cookies
+//清除用户信息cookies
+const removeCookies = ()=> {
   $cookies.remove("id")
   $cookies.remove("token")
   $cookies.remove("username")
   $cookies.remove("imageUrl")
+}
+
+//保存用户信息到cookie
+const setCookies = ()=> {
+  const userObjKeys = Object.keys(store.user)
+  for(let i = 0; i < userObjKeys.length; ++i) {
+    $cookies.set(userObjKeys[i], store.user[userObjKeys[i]])
+  }
+}
+//监听登录信息，修改cookies
+watch(() => store.user, () => {
+  setCookies()
+}, {deep: true})
+
+// 登出按钮
+const LogOut = ()=>{
+  store.login=false
+  store.token=''
+  removeCookies()
 }
 
 const loginAppear=ref(false)
@@ -75,11 +91,6 @@ async function sendLoginRequest() {
 
       store.login=true
       store.user = response.data.data//id、token、username、imageUrl
-      //保存到cookie
-      const userObjKeys = Object.keys(store.user)
-      for(let i = 0; i < userObjKeys.length; ++i) {
-        $cookies.set(userObjKeys[i], store.user[userObjKeys[i]])
-      }
 
       loginAppear.value=false
       console.log(store.user) //TODO: 打印日志，测试完毕可以删去
