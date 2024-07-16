@@ -9,8 +9,8 @@ import Aside from '@/components/Aside.vue'
 import {store} from "@/stores/store";
 
 const readCookies = () => {
-  const keys = ["id", "stuId", "username", "phone", "email", "imageUrl", "createTime"]
-  let userCk = {id : null, stuId : null, username : null, phone : null, email : null, imageUrl : null, createTime : null}
+  const keys = ["id", "stuId", "username", "phone", "email", "imageUrl", "createTime", "token"]
+  let userCk = {id : null, stuId : null, username : null, phone : null, email : null, imageUrl : null, createTime : null, token: null}
   for(let key of keys) {
     userCk[key] = $cookies.get(key)
   }

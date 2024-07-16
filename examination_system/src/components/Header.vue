@@ -49,7 +49,10 @@ watch(() => store.user, () => {
 // 登出按钮
 const LogOut = ()=>{
   store.login=false
-  store.token=''
+  const userObjKeys = Object.keys(store.user)
+  for(let key of userObjKeys) {
+    store.user[key] = ''
+  }
   removeCookies()
 }
 
@@ -93,11 +96,12 @@ async function sendLoginRequest() {
       
       const responseInfo = await axios.get(`${constant.host}/user/user/${responseLogin.data.data.id}`);
       store.user = responseInfo.data.data
+      store.user.token = responseLogin.data.data.token
       loginAppear.value=false
       console.log(store.user) //TODO: 打印日志，测试完毕可以删去
     }
     else{
-      ElMessage.error(response.data.msg)
+      ElMessage.error(responseLogin.data.msg)
     }
 
 

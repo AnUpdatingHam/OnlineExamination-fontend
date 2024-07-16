@@ -6,6 +6,12 @@ export const store = reactive({
     id: 0,
     username: "未登录",
     token: '',
+    stuId: '',
+    phone: '',
+    email: '',
+    imageUrl: '' ,
+    createTime: [],
+    
   },
   team: {
     id:1,

@@ -221,14 +221,15 @@ export default{
         this.addUser()
       else this.updateUser()
     },
-    async getUserList(){
+    async getTeamList(){
       try {
         const queryParams = {
-          username: "",
+          userId: store.user.id,
+          keyword: '',
           page: 1,
           pageSize: 1000
         }
-        const ret = await axios.get(`${constant.host}/user/user/page`, {params: queryParams})
+        const ret = await axios.get(`${constant.host}/user/team/page`, {params: queryParams})
         if(ret.data.code != 1){
           ElMessage.error(ret.data.msg)
         }
@@ -344,13 +345,11 @@ export default{
             for(let i=0;i<data.length;i++)
              
               for(let key of this.searchKeys){
-                console.log(key)
                 let it
                 if(typeof data[i][key] === "number")
                   it=String(data[i][key])
                 else
                   it=data[i][key]
-                console.log(it)
                 if(it.includes(this.state.searchValue)){
                   searchData.push(data[i])
                   break
@@ -361,7 +360,6 @@ export default{
          
           this.displayData = data.slice((this.state.pageNum-1)*this.state.pageSize , this.state.pageNum*this.state.pageSize)
           this.state.totalNumber = data.length
-          console.log(data, this.displayData) 
         }, 300)
       }
       
