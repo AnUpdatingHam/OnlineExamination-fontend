@@ -77,21 +77,21 @@ export default {
       questions: [
         {
           id: 1,
-          text: '这里是问题的具体内容。这是一个示例文本，它将展示自动换行的效果。这是一个示例文本，它将展示自动换行的效果。Lorem ipsum dolor sit amet, consectetur adipiscing elit.Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n这里是问题的具体内容。这是一个示例文本，它将展示自动换行的效果。这是一个示例文本，它将展示自动换行的效果。Lorem ipsum dolor sit amet, consectetur adipiscing elit.Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n这里是问题的具体内容。这是一个示例文本，它将展示自动换行的效果。这是一个示例文本，它将展示自动换行的效果。Lorem ipsum dolor sit amet, consectetur adipiscing elit.Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n',
+          text: '请问资伍组的组长是谁？\n',
           candidateAns: "选项A 选项B 选项C 选项D",
-          options: ['选项A', '选项B', '选项C', '选项D'],
+          options: ['张璞', '震撼', '郑汉', '汉灯'],
           score: 5,
-          correctAnswer: 0,
+          correctAnswer: 1,
           analysis: '这里是解析的内容，可以根据实际需要填写。',
           ans: 1
         },
         {
           id: 2,
-          text: '这是第二个问题。',
+          text: '请问张璞帅还是郑汉帅？',
           candidateAns: "选项A 选项B 选项C 选项D",
-          options: ['选项A', '选项B', '选项C', '选项D'],
-          score: 10,
-          correctAnswer: 1,
+          options: ['张璞', '郑汉', '震撼', '钝角'],
+          score: 95,
+          correctAnswer: 0,
           analysis: '这里是第二个问题的解析内容。',
           ans: 2
         },
