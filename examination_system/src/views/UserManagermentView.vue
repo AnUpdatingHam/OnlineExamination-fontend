@@ -221,7 +221,7 @@ export default{
         this.addUser()
       else this.updateUser()
     },
-    async getTeamList(){
+    async getUserList(){
       try {
         const queryParams = {
           userId: store.user.id,
@@ -229,7 +229,7 @@ export default{
           page: 1,
           pageSize: 1000
         }
-        const ret = await axios.get(`${constant.host}/user/team/page`, {params: queryParams})
+        const ret = await axios.get(`${constant.host}/user/user/page`, {params: queryParams})
         if(ret.data.code != 1){
           ElMessage.error(ret.data.msg)
         }
