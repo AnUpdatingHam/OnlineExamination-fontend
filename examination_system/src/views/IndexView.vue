@@ -17,7 +17,7 @@
 </template>
 
 <script>
-
+import { ElMessage } from 'element-plus';
 export default {
   methods:{
     goToTeam(){

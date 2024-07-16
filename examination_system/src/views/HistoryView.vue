@@ -59,6 +59,7 @@
 // 引入 Axios 库
 import axios from 'axios';
 import {store} from "@/stores/store";
+import { ElMessage } from 'element-plus';
 
 // 定义一个异步函数来发送 GET 请求
 async function getUser() {

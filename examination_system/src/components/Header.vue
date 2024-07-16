@@ -71,7 +71,7 @@ async function sendLoginRequest() {
           }
         });
     if(response.data.code===1){
-      alert("登陆成功！")
+      ElMessage.success("登陆成功")
 
       store.login=true
       store.user = response.data.data//id、token、username、imageUrl
@@ -85,7 +85,7 @@ async function sendLoginRequest() {
       console.log(store.user) //TODO: 打印日志，测试完毕可以删去
     }
     else{
-      alert(response.data.msg) // 打印错误信息
+      ElMessage.error(response.data.msg)
     }
 
 
@@ -113,7 +113,7 @@ async function sendLoginRequest() {
       <!-- 已登录状态 -->
       <div class="toolbar" v-if="store.login">
         <div class="block" style="margin-right: 10px;">
-          <el-avatar :size="40" :src="store.user.imageUrl" />
+          <el-avatar :size="40" :src="store.user.imageUrl != null ? store.user.imageUrl : 'https://dimg04.c-ctrip.com/images/zc0a170000011f8t5F2C8.jpg'" />
         </div>
         <span>{{ store.user.username }}</span>
         <el-dropdown trigger="click">

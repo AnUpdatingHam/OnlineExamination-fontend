@@ -8,8 +8,37 @@
         {{ opt }}
       </div>
     </div>
+    <el-dialog :title="isAdd ? '添加用户' : '修改用户'" v-model="addDialogVisible" width="50%" @close="addDialogClosed">
+      <!-- 内容主体区 -->
+      <el-form :model="addUserForm" :rules="addUserFormRules" ref="addUserFormRef" label-width="70px">
+        <el-form-item label="学号" prop="stuId"> <!-- prop是验证规则属性 -->
+          <el-input v-model="addUserForm.stuId" @input="change($event)"></el-input>
+        </el-form-item>
+        <el-form-item label="用户名" prop="username"> <!-- prop是验证规则属性 -->
+          <el-input v-model="addUserForm.username" @input="change($event)"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input v-model="addUserForm.password" type="password" @input="change($event)"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="addUserForm.email" @input="change($event)"></el-input>
+        </el-form-item>
+        <el-form-item label="手机" prop="phone">
+          <el-input v-model="addUserForm.phone" @input="change($event)"></el-input>
+        </el-form-item>
+      </el-form>
+      <!--底部区-->
+      <span slot="footer" class="dialog-footer">
+          <el-button @click="addDialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="handleSubmit()">确 定</el-button>
+        </span>
+    </el-dialog>
+
+    <el-col :span="4">
+      <el-button type="primary" @click="handleAdd">添加用户</el-button>
+    </el-col>
     <div class="search">
-      <input type="text" placeholder="搜索" v-model="state.searchValue">
+      <input type="text" placeholder="搜索" v-model="search">
       <img src="../assets/search.png">
     </div>
   </div>
@@ -19,7 +48,6 @@
       <tr>
         <th>学号</th>
         <th>用户名</th>
-
         <th>手机号</th>
         <th>邮箱</th>
         <th>头像</th>
@@ -28,16 +56,16 @@
       </tr>
     </thead>
     <tbody>
-      <tr v-for="(item,index) in displayData" :key="item.id" @click="goToPaper">
+      <tr v-for="(item,index) in displayData" :key="item.id">
         <td>{{ item.stuId }}</td>
         <td>{{ item.username }}</td>
         <td>{{ item.phone }}</td>
         <td>{{ item.email }}</td>
 
-        <td class="img-td"><img :src="item.imageUrl" alt="用户头像"></td>
+        <td class="img-td"><img :src="item.imageUrl != null ? item.imageUrl : 'https://dimg04.c-ctrip.com/images/zc0a170000011f8t5F2C8.jpg'" alt="用户头像"></td>
         <td>{{ item.createTime }}</td>
         <td>
-          <a href="#" @click="editUser(item.id)" style="color: #87CEFA;">
+          <a href="#" @click.prevent="handleEditing(index)" style="color: #87CEFA;">
             <img src="../assets/xiu_gai2.png" alt="Edit" width="16" height="16"> 修改
           </a>
           <span>&nbsp;</span> <!-- 添加一个空格 -->
@@ -73,6 +101,7 @@
 import axios from "axios";
 import {constant} from "@/stores/constant";
 import {store} from "@/stores/store";
+import { ElMessage } from 'element-plus';
 
 export default{
   data(){
@@ -81,6 +110,7 @@ export default{
       timer: null,//延时器
       displayData: [],
       active: -1,
+      isAdd: false,
       state:{
         pageNum: 1,
         pageSize: 10,
@@ -115,12 +145,36 @@ export default{
         {id: 23,stuId:123,  username:  '英语', phone: '初二', exam: '中考', avatarUrl: "https://tse1-mm.cn.bing.net/th/id/OIP-C.D9SyQRPpqDoTXRX0VRqJdAHaHa?w=206&h=208&c=7&r=0&o=5&dpr=1.4&pid=1.7", email:"123@exam.com", answer: '无', create_time: "2024.4.1"},
         {id: 24,stuId:123,  username:  '数学', phone: '高二', exam: '高考', avatarUrl: "https://tse1-mm.cn.bing.net/th/id/OIP-C.D9SyQRPpqDoTXRX0VRqJdAHaHa?w=206&h=208&c=7&r=0&o=5&dpr=1.4&pid=1.7", email:"123@exam.com", answer: '无', create_time: "2024.4.1"},
       ],
+      addDialogVisible: false, //控制添加用户对话框的显示与隐藏
+      addUserForm:{},
+      addUserFormRules: {
+        stuId:[{required:true,message:'请输入学号',trigger:'blur'}],
+        username: [{required:true,message:'请输入用户名',trigger:'blur'},
+          {min:3,max:10,message:'用户名长度在3~10个字符',trigger:'blur'}],
+        password: [{required:true,message:'请输入密码',trigger:'blur'},
+          {min:6,max:15,message:'密码长度在6~15个字符',trigger:'blur'}],
+        email: [{required:true,message:'请输入邮箱',trigger:'blur'}],
+        phone: [{required:true,message:'请输入手机号',trigger:'blur'}],
+      },
+      change(e){
+        this.$forceUpdate()
+      },
     }
   },
   methods:{
+    handleEditing(index, event){
+      this.addDialogVisible = true
+      this.isAdd = false
+      this.addUserForm = this.historyData[index]
+    },
+    handleAdd(event){
+      this.addDialogVisible = true
+      this.isAdd = true
+    },
     formatDateArrayToString(dateArray) {
       // 检查传入的数组是否具有6个元素
       if (!dateArray || dateArray.length > 6) {
+        ElMessage.error("日期数组必须小于6个元素：年、月、日、小时、分钟")
         throw new Error('日期数组必须小于6个元素：年、月、日、小时、分钟');
       }
       if (dateArray.length < 6) {
@@ -155,17 +209,101 @@ export default{
     switchActive2(){
       this.active=-1
     },
-    async editUser(targetId) {
-
+    //监听添加用户对话框的关闭状态
+    addDialogClosed(){
+      this.$refs.addUserFormRef.resetFields();
+      this.getUserList()
+    },
+    handleSubmit(){
+      if(this.isAdd)
+        this.addUser()
+      else this.updateUser()
+    },
+    async getUserList(){
+      try {
+        const queryParams = {
+          username: "",
+          page: 1,
+          pageSize: 1000
+        }
+        const ret = await axios.get(`${constant.host}/user/user/page`, {params: queryParams})
+        if(ret.data.code != 1){
+          ElMessage.error(ret.data.msg)
+        }
+        this.historyData = ret.data.data.records//总数
+        this.historyData.forEach((item) => {
+          item.createTime = this.formatDateArrayToString(item.createTime)
+        })
+      } catch(error) {
+        ElMessage.error(error)
+      }
+    },
+    // 点击按钮，添加新用户
+    async addUser(){
+      await this.$refs.addUserFormRef.validate(async valid =>{
+        if(!valid) return;//校验没通过，返回
+        try {
+          const headersConfig = {
+            headers: {
+              'Content-Type': 'application/json', // 根据你的API要求设置正确的Content-Type
+              'Token': `${store.user.token}` // 通常Token以Bearer开头
+            }
+          }
+          const ret = await axios.post(`${constant.host}/user/user`, this.addUserForm, headersConfig)
+          if(ret.data.code != 1){
+            ElMessage.error(ret.data.msg)
+          }
+          else{
+            // 隐藏添加用户的对话框
+            ElMessage.success("添加成功")
+            this.addDialogVisible = false;
+            //重新获取用户列表数据
+            this.getUserList();
+          }
+        } catch(error) {
+          ElMessage.error(error)
+        }
+      })
+    },
+    async updateUser() {
+      await this.$refs.addUserFormRef.validate(async valid =>{
+        if(!valid) return;//校验没通过，返回
+        try {
+          const headersConfig = {
+            headers: {
+              'Content-Type': 'application/json', // 根据你的API要求设置正确的Content-Type
+              'Token': `${store.user.token}` // 通常Token以Bearer开头
+            }
+          }
+          const ret = await axios.put(`${constant.host}/user/user`, this.addUserForm, headersConfig)
+          if(ret.data.code != 1){
+            ElMessage.error(ret.data.msg)
+          }
+          else{
+            // 隐藏添加用户的对话框
+            ElMessage.success("修改成功")
+            this.addDialogVisible = false;
+            //重新获取用户列表数据
+            this.getUserList();
+          }
+        } catch(error) {
+          ElMessage.error(error)
+        }
+      })
     },
     async deleteUser(targetId) {
       try {
-        // console.log("targetId=",targetId,",",this.historyData)
-        // const ret = await axios.get(`${constant.host}/user/user/status/${targetId}/0`)
-        // console.log(JSON.stringify(ret))
+        const headersConfig = {
+          headers: {
+            'Content-Type': 'application/json', // 根据你的API要求设置正确的Content-Type
+            'Token': `${store.user.token}` // 通常Token以Bearer开头
+          }
+        }
+        const ret = await axios.delete(`${constant.host}/user/user/${targetId}`, headersConfig)
+        console.log(JSON.stringify(ret))
         this.historyData = this.historyData.filter((item) => item.id != targetId)
       } catch(error) {
-        console.error("Getting Data Error:", error)
+        ElMessage.error("error")
       }
     },
   },
@@ -208,9 +346,7 @@ export default{
                   break
                 }
               }
-              
             data=searchData
-            
           }
          
           this.displayData = data.slice((this.state.pageNum-1)*this.state.pageSize , this.state.pageNum*this.state.pageSize)
@@ -221,22 +357,7 @@ export default{
     }
   },
   async created() {
-    try {
-      const queryParams = {
-        username: "",
-        page: 1,
-        pageSize: 1000
-      }
-      const ret = await axios.get(`${constant.host}/user/user/page`, {params: queryParams})
-      this.historyData = ret.data.data.records//总数
-      this.historyData.forEach((item) => {
-        item.createTime = this.formatDateArrayToString(item.createTime)
-        //console.log(item.createTime)
-      })
-      console.log("parms = ", queryParams, "displayData = ", this.displayData)
-    } catch(error) {
-      console.error("Getting Data Error:", error)
-    }
+    await this.getUserList()
   }
 }
 </script>
@@ -280,7 +401,7 @@ export default{
 }
 
 .active:hover{
-  background-color: #1D91E8; 
+  background-color: #1D91E8;
 }
 
 .search{

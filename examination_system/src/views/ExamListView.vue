@@ -26,6 +26,7 @@
 import axios from "axios";
 import {constant} from "@/stores/constant";
 import {store} from "@/stores/store";
+import { ElMessage } from 'element-plus';
 
 export default {
   name: 'ExamListView',
@@ -78,7 +79,7 @@ export default {
       //根据历史作答和试卷渲染页面
 
     } catch(error) {
-      console.error("Getting Data Error:", error)
+      ElMessage.error(error)
     }
   },
   methods: {

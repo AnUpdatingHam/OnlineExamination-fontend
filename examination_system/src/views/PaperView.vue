@@ -60,13 +60,7 @@
     
   </div>
 </template>
-
-<!-- <script src="pdf.js"></script>
-<script src="pdf.worker.js"></script> -->
-<!-- <script src="node_modules/pdfjs-dist/build/pdf.min.js"></script> -->
 <script>
-
-// import pdf from "https://mozilla.github.io/pdf.js/build/pdf.js"
 
 export default {
   data() {

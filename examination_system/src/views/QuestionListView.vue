@@ -43,6 +43,7 @@
 import axios from 'axios';
 import {constant} from "@/stores/constant";
 import {store} from "@/stores/store";
+import { ElMessage } from 'element-plus';
 
 export default {
   data() {
@@ -120,7 +121,6 @@ export default {
           id: this.records[questionIndex].recordId,//需要请求获得records
           ans: this.questions[questionIndex].ans
         }
-        console.log(JSON.stringify(store.headersConfig))
         const headersConfig = {
           headers: {
             'Content-Type': 'application/json', // 根据你的API要求设置正确的Content-Type
@@ -129,10 +129,10 @@ export default {
         }
         const ret = await axios.put(`${constant.host}/user/record`, putData, headersConfig)
         if(ret.data.code != 1){
-         alert(ret.data.msg) // 打印错误信息
+          ElMessage.error(ret.data.msg)
         }
       } catch(error) {
-        alert(error) // 打印错误信息
+        ElMessage.error(error)
       }
     }
   },

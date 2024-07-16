@@ -83,31 +83,8 @@ export default {
     };
   },
   created() {
-    this.getUserProfile();
   },
   methods: {
-    async getUserProfile() {
-      this.showLoading('正在加载用户信息...');
-      try {
-        const response = await axios.get('/api/user/profile');
-        if (response.status === 200 && response.data) {
-          const data = response.data;
-          this.stuId = data.stuId || '';
-          this.username = data.username || '';
-          this.phone = data.phone || '';
-          this.email = data.email || '';
-          this.imageUrl = data.imageUrl || '';
-          this.createTime = data.createTime || '';
-        } else {
-          this.showMessage('获取用户信息失败', 'error');
-        }
-      } catch (error) {
-        console.error('获取用户信息失败', error);
-        this.showMessage('获取用户信息失败', 'error');
-      } finally {
-        this.closeLoading();
-      }
-    },
     toggleEdit(field) {
       this.isEditing = true;
       this.editingField = field;

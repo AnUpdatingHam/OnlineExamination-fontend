@@ -60,9 +60,9 @@ const iconColor = ref('color:#F8FAFB')
           <template #title>
             <el-icon>
               <Watermelon />
-            </el-icon><span>资源管理</span>
+            </el-icon><span>个人中心</span>
           </template>
-          <el-menu-item index="/admin/filesAdmin">资源管理列表</el-menu-item>
+          <el-menu-item index="/user">用户主页</el-menu-item>
         </el-sub-menu>
         <el-sub-menu index="7">
           <template #title>
