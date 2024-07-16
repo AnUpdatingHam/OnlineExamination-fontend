@@ -1,5 +1,6 @@
 <template>
 
+  <!-- 当前页展示的信息在displayData、所有的信息在historyData。主要区别在于是否经过搜索或分页 -->
   <div class="find">
     <div class="select">
       <p>用户列表</p>
@@ -38,7 +39,7 @@
       <el-button type="primary" @click="handleAdd">添加用户</el-button>
     </el-col>
     <div class="search">
-      <input type="text" placeholder="搜索" v-model="search">
+      <input type="text" placeholder="搜索" v-model="state.searchValue">
       <img src="../assets/search.png">
     </div>
   </div>
@@ -119,6 +120,7 @@ export default{
         searchValue: "",
         totalNumber: 24,    //n
       },
+      searchKeys: ["username", "stuId", "phone", "email", "createTime"],
       historyData:[         //n组数据
         {id: 1, stuId:123, username: '张璞',  phone:'12345', exam: '高考', avatarUrl: "https://tse1-mm.cn.bing.net/th/id/OIP-C.D9SyQRPpqDoTXRX0VRqJdAHaHa?w=206&h=208&c=7&r=0&o=5&dpr=1.4&pid=1.7", email:"123@exam.com", answer:'震撼', create_time: "2024.5.1"},
         {id: 2, stuId:123, username: '震撼',  phone:'12142', exam: '中考', avatarUrl: "https://tse1-mm.cn.bing.net/th/id/OIP-C.D9SyQRPpqDoTXRX0VRqJdAHaHa?w=206&h=208&c=7&r=0&o=5&dpr=1.4&pid=1.7", email:"123@exam.com", answer: '无', create_time: "2024.5.1"},
@@ -165,7 +167,7 @@ export default{
     handleEditing(index, event){
       this.addDialogVisible = true
       this.isAdd = false
-      this.addUserForm = this.historyData[index]
+      this.addUserForm = this.displayData[index]
     },
     handleAdd(event){
       this.addDialogVisible = true
@@ -222,7 +224,8 @@ export default{
     async getUserList(){
       try {
         const queryParams = {
-          username: "",
+          userId: store.user.id,
+          keyword: '',
           page: 1,
           pageSize: 1000
         }
@@ -282,9 +285,14 @@ export default{
           else{
             // 隐藏添加用户的对话框
             ElMessage.success("修改成功")
+            //如果修改当前登录账号的影响显示的信息，更新登录信息
+            if(this.addUserForm.id == store.user.id && (this.addUserForm.username != store.user.username)) {
+              store.user.username = this.addUserForm.username
+            }
             this.addDialogVisible = false;
             //重新获取用户列表数据
             this.getUserList();
+            
           }
         } catch(error) {
           ElMessage.error(error)
@@ -318,7 +326,7 @@ export default{
       deep: true,
       handler() {
         clearTimeout(this.timer)
-          this.timer = setTimeout(() => {
+        this.timer = setTimeout(() => {
           console.log("disp")
           let data
           if(this.active>-1){
@@ -333,14 +341,15 @@ export default{
 
           if(this.state.searchValue){
             let searchData=[]
+            
             for(let i=0;i<data.length;i++)
-              for(let key in data[i]){
+             
+              for(let key of this.searchKeys){
                 let it
                 if(typeof data[i][key] === "number")
                   it=String(data[i][key])
                 else
                   it=data[i][key]
-
                 if(it.includes(this.state.searchValue)){
                   searchData.push(data[i])
                   break
@@ -351,7 +360,7 @@ export default{
          
           this.displayData = data.slice((this.state.pageNum-1)*this.state.pageSize , this.state.pageNum*this.state.pageSize)
           this.state.totalNumber = data.length
-      }, 300)
+        }, 300)
       }
       
     }
