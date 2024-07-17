@@ -9,11 +9,11 @@
 <!--    <el-col :span="3" style="position: absolute;right: 360px;">-->
 <!--      <el-button type="primary" @click="handleConfirm">确认试题</el-button>-->
 <!--    </el-col>-->
-   <el-col :span="3" style="position: absolute;right: 480px;">
+   <el-col :span="3" style="position: absolute;right: 460px;">
      <el-button type="primary" @click="addDialogVisible = true">修改</el-button>
    </el-col>
     <el-col :span="3"  style="position: absolute;right: 360px;">
-      <el-button type="primary" @click="handleRdSelect">抽取试题</el-button>
+      <el-button type="primary" @click="addDialogVisible = !addDialogVisible">抽取试题</el-button>
     </el-col>
     <div class="search">
       <input type="text" placeholder="搜索" v-model="state.searchValue">
@@ -23,8 +23,8 @@
   <el-dialog :title="修改考试" v-model="addDialogVisible" width="50%" @close="addDialogClosed" class="dialog-body">
       <!-- 内容主体区 -->
       <el-form :model="addUserForm" :rules="addUserFormRules" label-width="70px">
-        <el-form-item label="专业" prop="major"> <!-- prop是验证规则属性 -->
-          <el-input v-model="addUserForm.major" @input="change($event)"></el-input>
+        <el-form-item label="专业" prop="majorNames"> <!-- prop是验证规则属性 -->
+          <el-input v-model="addUserForm.majorNames" @input="change($event)"></el-input>
         </el-form-item>
         <el-form-item label="试题数" prop="count"> <!-- prop是验证规则属性 -->
           <el-input v-model="addUserForm.count" @input="change($event)"></el-input>
@@ -95,9 +95,12 @@ export default{
         totalNumber: 24,    //n
       },
       addDialogVisible: false, //控制添加用户对话框的显示与隐藏
-      addUserForm:{},
+      addUserForm:{
+        majorNames: "计算机科学与技术 软件工程",
+        count: 5
+      },
       addUserFormRules: {
-        major:[{required:true,message:'请输入专业名',trigger:'blur'}],
+        majorNames:[{required:true,message:'请输入专业名',trigger:'blur'}],
         count: [{required:true,message:'请输入试题数',trigger:'blur'}],
 
       },
@@ -127,11 +130,12 @@ export default{
       //将historyData中的数据传给后端
     },
     async handleRdSelect() {
+      this.addDialogVisible = false
       try {
         const bodyParams = {
           examId: 1,
-          majorNames: this.addUserForm.major, //"计算机科学与技术 软件工程", //需要修改
-          questionCount: this.addUserForm.count //
+          majorNames: this.addUserForm.majorNames, //"计算机科学与技术 软件工程"
+          questionCount: this.addUserForm.count // 5 //
         }
         const ret = await axios.post(`${constant.host}/user/exam/question/shuffle`, bodyParams)
         this.records = ret.data.data.records
