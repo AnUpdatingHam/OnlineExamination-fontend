@@ -14,6 +14,7 @@ const router = createRouter({
         { path: '/admin/user', name: 'userManagement', component: () => import('../views/UserManagementView.vue')},
         { path: '/admin/question', name: 'questionManagement', component: () => import('../views/QuestionManagementView.vue')},
         { path: '/admin/examScoreList', name: 'examScoreList', component: () => import('../views/ExamScoreListView.vue')},
+        { path: '/admin/major', name: 'majorManagement', component: () => import('../views/MajorManagementView.vue')},
         { path: '/:pathMatch(.*)*', name: 'noFound', component: () => import('../views/NoFoundVue.vue')}
     ]
 })

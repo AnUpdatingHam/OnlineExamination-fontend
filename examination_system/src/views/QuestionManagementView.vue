@@ -3,7 +3,7 @@
   <!-- 当前页展示的信息在displayData、所有的信息在historyData。主要区别在于是否经过搜索或分页 -->
   <div class="find">
     <div class="select">
-      <p>试题列表</p>
+      <p style="font-size: 28px">试题列表</p>
     </div>
     <el-dialog :title="isAdd ? '添加试题' : '修改试题'" v-model="addDialogVisible" width="50%" @close="addDialogClosed">
       <!-- 内容主体区 -->
@@ -19,6 +19,9 @@
         </el-form-item>
         <el-form-item label="正确答案" prop="rightAns">
           <el-input v-model="addQuestionFrom.rightAns" @input="change($event)"></el-input>
+        </el-form-item>
+        <el-form-item label="图片链接" prop="imageUrls">
+          <el-input v-model="addQuestionFrom.imageUrls" @input="change($event)"></el-input>
         </el-form-item>
       </el-form>
       <!--底部区-->
@@ -51,10 +54,10 @@
     <tbody>
       <tr v-for="(item,index) in displayData" :key="item.id">
         <td>{{ item.text }}</td>
-        <td>{{ item.type }}</td>
-        <td class="img-td"><img :src="item.imageUrls != null ? item.imageUrls : 'https://dimg04.c-ctrip.com/images/zc0a170000011f8t5F2C8.jpg'" alt="试题图片"></td>
+        <td>{{ item.type === 0 ? '单选题' : item.type === 1 ? '多选题' : '正误题' }}</td>
+        <td class="img-td"><img :src="item.imageUrls != null ? item.imageUrls : 'https://img2.baidu.com/it/u=2784875309,3146305990&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=571'" alt="试题图片"></td>
         <td>{{ item.candidateAns }}</td>
-        <td>{{ item.rightAns }}</td>
+        <td>{{ item.rightAnsExpression }}</td>
         <td>
           <a href="#" @click.prevent="handleEditing(index)" style="color: #87CEFA;">
             <img src="../assets/xiu_gai2.png" alt="Edit" width="16" height="16"> 修改
@@ -164,13 +167,27 @@ export default{
       try {
         const queryParams = {
           page: 1,
-          pageSize: 1000
+          pageSize: 1000,
+          type: -1
         }
         const ret = await axios.get(`${constant.host}/user/question/page`, {params: queryParams})
         if(ret.data.code != 1){
           ElMessage.error(ret.data.msg)
         }
         this.historyData = ret.data.data.records//总数
+        for (let i = 0; i < this.historyData.length; i++) {
+          this.historyData[i].rightAnsArray = this.historyData[i].rightAns.split(' ')
+          if(this.historyData[i].type === 10) //是非
+            this.historyData[i].rightAnsExpression = this.historyData[i].rightAns[0] == true ? "true" : "false"
+          else{
+            this.historyData[i].rightAnsExpression = ""
+            for (let j = 0; j < this.historyData[i].rightAnsArray.length; j++) {
+              if(this.historyData[i].rightAnsArray[j] != 0)
+                this.historyData[i].rightAnsExpression += String.fromCharCode(65 + j);
+            }
+          }
+        }
+
       } catch(error) {
         ElMessage.error(error)
       }
@@ -261,9 +278,10 @@ export default{
           let data
           if(this.active>-1){
             let subjectData=[];
-            for(let i=0;i<this.historyData.length;i++)
-              if(this.options[this.active] === this.historyData[i].subject)
+            for(let i=0;i<this.historyData.length;i++) {
+              if (this.options[this.active] === this.historyData[i].subject)
                 subjectData.push(this.historyData[i])
+            }
             data=subjectData
           }
           else
@@ -273,7 +291,6 @@ export default{
             let searchData=[]
             
             for(let i=0;i<data.length;i++)
-             
               for(let key of this.searchKeys){
                 let it
                 if(typeof data[i][key] === "number")
@@ -296,7 +313,7 @@ export default{
     }
   },
   async created() {
-    // await this.getQuestionList()
+    await this.getQuestionList()
   }
 }
 </script>

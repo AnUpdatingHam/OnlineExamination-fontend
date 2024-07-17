@@ -63,7 +63,7 @@ const iconColor = ref('color:#F8FAFB')
               <Watermelon />
             </el-icon><span>个人中心</span>
           </template>
-          <el-menu-item index="/user">用户主页</el-menu-item>
+          <el-menu-item :index="`/${store.isAdmin ? 'admin/team' : 'user'}`">用户主页</el-menu-item>
         </el-sub-menu>
         <el-sub-menu index="7">
           <template #title>

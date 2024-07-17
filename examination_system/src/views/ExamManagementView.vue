@@ -3,7 +3,7 @@
   <!-- 当前页展示的信息在displayData、所有的信息在historyData。主要区别在于是否经过搜索或分页 -->
   <div class="find">
     <div class="select">
-      <p>考试列表</p>
+      <p style="font-size: 28px">考试列表</p>
     </div>
     <el-dialog :title="isAdd ? '添加考试' : '修改考试'" v-model="addDialogVisible" width="50%" @close="addDialogClosed">
       <!-- 内容主体区 -->
