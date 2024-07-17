@@ -3,7 +3,7 @@
   <!-- 当前页展示的信息在displayData、所有的信息在historyData。主要区别在于是否经过搜索或分页 -->
   <div class="find">
     <div class="select">
-      <p>{{ this.$route.query.ename }}分数列表</p>
+      <p style="font-size: 28px">{{ this.$route.query.ename }}分数列表</p>
     </div>
 
     <div class="search">

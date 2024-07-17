@@ -68,7 +68,7 @@ export default{
     return{
       // options: ["资伍组","郑汉","震撼"], 
       timer: null,//延时器
-      
+      records: [],
       active: -1,
       isAdd: false,
       state:{
@@ -103,16 +103,25 @@ export default{
     handleConfirm() {
       //将historyData中的数据传给后端
     },
-    handleRdSelect() {
-      let result = []
-      let ranNum = Math.min(10, this.QuesionsLib.length) //需要修改
-      let arr = this.QuesionsLib;
-      for (var i = 0; i < ranNum; i++) {
-        let ran = Math.floor(Math.random() * (arr.length - i));
-        result.push(arr[ran]);
-        arr[ran] = arr[arr.length - i - 1];
-      };
-      this.historyData = result
+    async handleRdSelect() {
+      try {
+        const bodyParams = {
+          examId: 1,
+          majorNames: "计算机科学与技术 软件工程", //需要修改
+          questionCount: 5,
+        }
+        const ret = await axios.post(`${constant.host}/user/exam/question/shuffle`, bodyParams)
+        this.records = ret.data.data.records
+        if(ret.data.code != 1){
+          ElMessage.error(ret.data.msg)
+        }
+      } catch(error) {
+        ElMessage.error(error)
+        console.log("error", getAll)
+      }
+      await this.queryQuestionList(false)
+      this.originalQuestions = this.modifyQuestionsData(this.records)
+      this.historyData = this.modifyQuestionsData(this.records)
     },
     modifyQuestionsData(records) {
       let Data = records
@@ -139,17 +148,18 @@ export default{
           page: 1,
           pageSize: 1000,
         } : {
-          examId: this.$router.query.eid,
+          examId: 1,
           keyword: '',
           page: 1,
           pageSize: 1000,
         };
         const apiPath = getAll? `${constant.host}/user/question/page` : `${constant.host}/user/exam/question/page`
+
         const ret = await axios.get(apiPath, {params: queryParams})
+        this.records = ret.data.data.records
         if(ret.data.code != 1){
           ElMessage.error(ret.data.msg)
         }
-        return ret.data.records
       } catch(error) {
         ElMessage.error(error)
         console.log("error", getAll)
@@ -208,11 +218,10 @@ export default{
     }
   },
   async created() {
-    let records = await this.queryQuestionList(false)
-    this.originalQuestions = this.modifyQuestionsData(records)
-    this.historyData = this.modifyQuestionsData(records)
-    records = await this.queryQuestionList(true)
-    QuesionsLib = this.modifyQuestionsData(records)
+    await this.queryQuestionList(false)
+    this.originalQuestions = this.modifyQuestionsData(this.records)
+    this.historyData = this.modifyQuestionsData(this.records)
+    //QuesionsLib = this.modifyQuestionsData(records)
   }
 }
 </script>
