@@ -20,9 +20,9 @@
       <img src="../assets/search.png">
     </div>
   </div>
-  <el-dialog :title="isAdd ? '添加用户' : '修改用户'" v-model="addDialogVisible" width="50%" @close="addDialogClosed" class="dialog-body">
+  <el-dialog :title="修改考试" v-model="addDialogVisible" width="50%" @close="addDialogClosed" class="dialog-body">
       <!-- 内容主体区 -->
-      <el-form :model="addUserForm" :rules="addUserFormRules" ref="addUserFormRef" label-width="70px">
+      <el-form :model="addUserForm" :rules="addUserFormRules" label-width="70px">
         <el-form-item label="专业" prop="major"> <!-- prop是验证规则属性 -->
           <el-input v-model="addUserForm.major" @input="change($event)"></el-input>
         </el-form-item>
@@ -33,7 +33,7 @@
       <!--底部区-->
       <span slot="footer" class="dialog-footer">
         <el-button @click="addDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="handleSubmit()">确 定</el-button>
+        <el-button type="primary" @click="handleRdSelect()">确 定</el-button>
       </span>
     </el-dialog>
   <table>
