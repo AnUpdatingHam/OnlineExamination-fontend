@@ -128,8 +128,27 @@ export default {
     getRemainTime() {
       this.nowTime = new Date(new Date().getTime() + 8 * 60 * 60 * 1000).toISOString().replace(/T/, ' ').replace(/\..+/, '').substring(0, 19);
     },
-    submitPaper() {
+    async submitPaper() {
       this.submitted = true;
+      try {
+        const postData = {
+          userId: store.user.id,
+          examId: this.$route.query.qid,
+          score: this.totalScore
+        }
+        const headersConfig = {
+          headers: {
+            'Content-Type': 'application/json', // 根据你的API要求设置正确的Content-Type
+                'Token': `${store.user.token}` // 通常Token以Bearer开头
+          }
+        }
+        const ret = await axios.post(`${constant.host}/user/record`, postData, headersConfig)
+        if(ret.data.code != 1){
+          ElMessage.error(ret.data.msg)
+        }
+      } catch(error) {
+        ElMessage.error(error)
+      }
     },
     async recordAnsChange(questionIndex, optionIndex) {
       let newValue = this.questions[questionIndex].ansArray[optionIndex]
@@ -194,7 +213,6 @@ export default {
         pageSize: this.pageSize
       }
       let ret = await axios.get(`${constant.host}/user/exam/records/page`, {params: queryParams})
-      console.log("data = " + JSON.stringify(ret.data))
       this.records = ret.data.data.records
       this.questions = this.records
       for (let i = 0; i < this.questions.length; i++) {
