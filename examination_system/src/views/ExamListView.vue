@@ -8,7 +8,7 @@
     <div class="team-grid">
       <!-- 循环显示所有考试 -->
       <router-link v-for="(exam, index) in exams" :key="index" class="team-item" :style="{ backgroundImage: 'url(' + exam.backgroundImg + ')' }"
-      :to="{path: '/question', query: {qid: exam.id, beginTime: exam.beginTime, endTime: exam.endTime, name: exam.name}}">
+      :to="{path: '/user/question', query: {qid: exam.id, beginTime: exam.beginTime, endTime: exam.endTime, name: exam.name}}">
         <div class="team-content">
           <div class="team-name">{{ exam.name }}</div>
           <div class="team-term">开始时间: {{ exam.beginTime }}</div>

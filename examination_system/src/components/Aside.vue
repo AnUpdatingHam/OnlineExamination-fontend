@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+import {store} from "@/stores/store";
 
 const settings = defineProps({
   collapse: Boolean,
@@ -30,7 +31,7 @@ const iconColor = ref('color:#F8FAFB')
               <Menu />
             </el-icon><span>我的课群</span>
           </template>
-          <el-menu-item index="/team">我的课群</el-menu-item>
+          <el-menu-item :index="`/${store.isAdmin ? 'admin' : 'user'}/team`">我的课群</el-menu-item>
         </el-sub-menu>
         <el-sub-menu index="3">
           <template #title>
@@ -38,15 +39,15 @@ const iconColor = ref('color:#F8FAFB')
               <Message />
             </el-icon><span>问题列表</span>
           </template>
-          <el-menu-item index="/question">问题列表</el-menu-item>
+          <el-menu-item :index="`/${store.isAdmin ? 'admin' : 'user'}/question`">问题列表</el-menu-item>
         </el-sub-menu>
         <el-sub-menu index="4">
           <template #title>
             <el-icon>
               <Files />
-            </el-icon><span>模块管理</span>
+            </el-icon><span>考试列表</span>
           </template>
-          <el-menu-item index="/admin/blocks">模块管理列表</el-menu-item>
+          <el-menu-item :index="`/${store.isAdmin ? 'admin' : 'user'}/exam`">考试管理列表</el-menu-item>
         </el-sub-menu>
         <el-sub-menu index="5">
           <template #title>
@@ -54,7 +55,7 @@ const iconColor = ref('color:#F8FAFB')
               <User />
             </el-icon><span>用户管理</span>
           </template>
-          <el-menu-item index="/admin/users">用户管理列表</el-menu-item>
+          <el-menu-item :index="`/${store.isAdmin ? 'admin' : 'user'}/user`">用户管理列表</el-menu-item>
         </el-sub-menu>
         <el-sub-menu index="6">
           <template #title>

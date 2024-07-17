@@ -2,6 +2,7 @@ import { reactive } from 'vue'
 
 export const store = reactive({
   login: false,
+  isAdmin: false,
   user: {
     id: null,
     username: "",

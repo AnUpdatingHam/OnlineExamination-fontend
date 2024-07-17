@@ -10,7 +10,7 @@
   <div class="team-container">
     <div class="team-grid">
       <!-- 循环显示所有课程 -->
-      <router-link v-for="(team, index) in teams" :key="index" class="team-item" :style="{ backgroundImage: 'url(' + team.backgroundImg + ')' }" :to="{path: '/examList', query: {tid: team.id, tname: team.name}}">
+      <router-link v-for="(team, index) in teams" :key="index" class="team-item" :style="{ backgroundImage: 'url(' + team.backgroundImg + ')' }" :to="{path: '/user/exam', query: {tid: team.id, tname: team.name}}">
         <div class="team-content">
           <div class="team-term">{{ team.term }}</div>
           <div class="team-name">{{ team.name }}</div>
@@ -97,7 +97,7 @@ export default {
   methods: {
     gotoExam(index){
       store.team = this.teams[index]
-      this.$router.push({name: 'exam'})
+      this.$router.push({name: 'examList'})
     },
   }
 };

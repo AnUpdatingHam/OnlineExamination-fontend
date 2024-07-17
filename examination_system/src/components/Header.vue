@@ -72,7 +72,7 @@ const login = ()=>{
 async function sendLoginRequest() {
   try {
     // 使用 Axios 发送 POST 请求，并包含 JSON 数据
-    const responseLogin = await axios.post(`${constant.host}/user/user/login`,
+    const responseLogin = await axios.post(`${constant.host}/${store.isAdmin ? "admin" : "user"}/${store.isAdmin ? "admin" : "user"}/login`,
         bodyParams(),
         {
           // 设置请求头，指明内容类型为 JSON
@@ -148,11 +148,12 @@ async function sendLoginRequest() {
   <!-- 登录界面 -->
   <div class="login-back" v-if="loginAppear">
     <div class="login-content">
-      <h3>登录</h3>
+      <h3>{{store.isAdmin ? "管理员" : "用户"}}登录</h3>
       <div class="close-button" @click="loginAppear=false">X</div>
       <input v-model="username" class="username" type="text" placeholder="请输入账号" @keyup.enter="login">
       <input v-model="password" class="password" type="password" placeholder="请输入密码" @keyup.enter="login">
       <el-button @click="login" type="primary" round style="border-radius: 40px;width: 200px;height: 40px;background-color: #0608E3;font-size: 18px;font-weight: 400;margin-top:50px;">登录</el-button>
+      <a href="#" class="admin-login-switcher" @click="store.isAdmin = !store.isAdmin">{{store.isAdmin ? "用户" : "管理员"}}登录</a>
     </div>
   </div>
 
@@ -283,6 +284,12 @@ async function sendLoginRequest() {
   margin-bottom: 20px;
 }
 
+.admin-login-switcher{
+  position: relative;
+  margin-left: 450px;
+  margin-top: 30px;
+  color: #1D91E8;
+}
 
 
 </style>
