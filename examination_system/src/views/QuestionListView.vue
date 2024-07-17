@@ -142,7 +142,7 @@ export default {
                 'Token': `${store.user.token}` // 通常Token以Bearer开头
           }
         }
-        const ret = await axios.post(`${constant.host}/user/record`, postData, headersConfig)
+        const ret = await axios.post(`${constant.host}/user/exam/submit`, postData, headersConfig)
         if(ret.data.code != 1){
           ElMessage.error(ret.data.msg)
         }
@@ -231,7 +231,8 @@ export default {
         examId: this.$route.query.qid
       }
       ret = await axios.get(`${constant.host}/user/exam/score`, {params: queryParams})
-      this.submitted = (ret.data.data.score != null)
+      console.log(JSON.stringify(ret.data.data))
+      this.submitted = (ret.data.data != null)
 
     } catch(error) {
       console.error("Getting Data Error:", error)
