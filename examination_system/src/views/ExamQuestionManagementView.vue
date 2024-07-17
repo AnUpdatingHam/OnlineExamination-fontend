@@ -9,9 +9,9 @@
 <!--    <el-col :span="3" style="position: absolute;right: 360px;">-->
 <!--      <el-button type="primary" @click="handleConfirm">确认试题</el-button>-->
 <!--    </el-col>-->
-<!--    <el-col :span="3" style="position: absolute;right: 480px;">-->
-<!--      <el-button type="primary" @click="historyData = originalQuestions">原试题</el-button>-->
-<!--    </el-col>-->
+   <el-col :span="3" style="position: absolute;right: 480px;">
+     <el-button type="primary" @click="addDialogVisible = true">修改</el-button>
+   </el-col>
     <el-col :span="3"  style="position: absolute;right: 360px;">
       <el-button type="primary" @click="handleRdSelect">抽取试题</el-button>
     </el-col>
@@ -20,7 +20,22 @@
       <img src="../assets/search.png">
     </div>
   </div>
-
+  <el-dialog :title="isAdd ? '添加用户' : '修改用户'" v-model="addDialogVisible" width="50%" @close="addDialogClosed" class="dialog-body">
+      <!-- 内容主体区 -->
+      <el-form :model="addUserForm" :rules="addUserFormRules" ref="addUserFormRef" label-width="70px">
+        <el-form-item label="专业" prop="major"> <!-- prop是验证规则属性 -->
+          <el-input v-model="addUserForm.major" @input="change($event)"></el-input>
+        </el-form-item>
+        <el-form-item label="试题数" prop="count"> <!-- prop是验证规则属性 -->
+          <el-input v-model="addUserForm.count" @input="change($event)"></el-input>
+        </el-form-item>
+      </el-form>
+      <!--底部区-->
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="addDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleSubmit()">确 定</el-button>
+      </span>
+    </el-dialog>
   <table>
     <thead>
       <tr>
@@ -79,6 +94,14 @@ export default{
         searchValue: "",
         totalNumber: 24,    //n
       },
+      addDialogVisible: false, //控制添加用户对话框的显示与隐藏
+      addUserForm:{},
+      addUserFormRules: {
+        major:[{required:true,message:'请输入专业名',trigger:'blur'}],
+        count: [{required:true,message:'请输入试题数',trigger:'blur'}],
+
+      },
+
       searchKeys: ["text", "type", "imageUrls", "rightAnsExpression"],
       //以下4种题目数组都是经过转换的
       QuesionsLib: [],//题库
@@ -107,8 +130,8 @@ export default{
       try {
         const bodyParams = {
           examId: 1,
-          majorNames: "计算机科学与技术 软件工程", //需要修改
-          questionCount: 5,
+          majorNames: this.addUserForm.major, //"计算机科学与技术 软件工程", //需要修改
+          questionCount: this.addUserForm.count //
         }
         const ret = await axios.post(`${constant.host}/user/exam/question/shuffle`, bodyParams)
         this.records = ret.data.data.records
