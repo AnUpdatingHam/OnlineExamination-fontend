@@ -11,6 +11,7 @@ const router = createRouter({
         { path: '/about', name: 'about', component: () => import('../views/AboutView.vue')},
         { path: '/question', name: 'question', component: () => import('../views/QuestionListView.vue')},
         { path: '/paper', name: 'paper', component: () => import('../views/PaperView.vue')},
+        { path: '/paperList', name: 'paperList', component: () => import('../views/PaperListView.vue')},
         { path: '/admin/users', name: 'admin/users', component: () => import('../views/UserManagementView.vue')},
         { path: '/:pathMatch(.*)*', name: 'noFound', component: () => import('../views/NoFoundVue.vue')}
     ]

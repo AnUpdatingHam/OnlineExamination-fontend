@@ -4,10 +4,6 @@
   <div class="find">
     <div class="select">
       <p>考试列表</p>
-      <div class="select-opt" :class="{'active':active===-1}" @click=switchActive2()>震撼-资伍组</div>
-      <div class="select-opt" v-for="(opt,index) in options" :key="index" :class="{'active':active===index}" @click="switchActive(index)">
-        {{ opt }}
-      </div>
     </div>
     <el-dialog :title="isAdd ? '添加考试' : '修改考试'" v-model="addDialogVisible" width="50%" @close="addDialogClosed">
       <!-- 内容主体区 -->
@@ -29,7 +25,7 @@
         </span>
     </el-dialog>
 
-    <el-col :span="4">
+    <el-col :span="3" style="position: absolute;right: 360px;">
       <el-button type="primary" @click="handleAdd">添加考试</el-button>
     </el-col>
     <div class="search">
@@ -66,6 +62,14 @@
           <a href="#" @click="deletePaper(item.id)" style="color: #87CEFA;">
             <img src="../assets/delete3.png" alt="Delete" width="16" height="16"> 删除
           </a>
+          <span>&nbsp;</span> <!-- 添加一个空格 -->
+          <span>&nbsp;</span> <!-- 添加一个空格 -->
+          <span>&nbsp;</span> <!-- 添加一个空格 -->
+          <span>&nbsp;</span> <!-- 添加一个空格 -->
+          <span>&nbsp;</span> <!-- 添加一个空格 -->
+          <router-link :to="{path: '/question', query: {qid: item.id, beginTime: item.beginTime, endTime: item.endTime, name: item.name}}" style="color: #87CEFA;">
+            查看
+          </router-link>
         </td>
       </tr>
     </tbody>
@@ -329,7 +333,7 @@ export default{
 
 .find{
   display: flex;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   align-items: center;
   margin: 70px;
   margin-bottom:10px;
@@ -337,6 +341,8 @@ export default{
 
 .find .select{
   display: flex;
+  position: absolute;
+  left: 170px;
 }
 
 .find .select p{
@@ -370,7 +376,9 @@ export default{
 .search{
   display: flex;
   align-items: center;
-  margin-right:240px;
+  /* margin-right:240px; */
+  position: absolute;
+  right: 300px;
 }
 
 .search input{

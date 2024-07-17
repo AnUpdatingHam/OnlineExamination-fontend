@@ -10,8 +10,7 @@
   <div class="team-container">
     <div class="team-grid">
       <!-- 循环显示所有课程 -->
-      <div v-for="(team, index) in teams" :key="index" class="team-item" :style="{ backgroundImage: 'url(' + team.backgroundImg + ')' }"
-      @click="gotoExam(index)">
+      <router-link v-for="(team, index) in teams" :key="index" class="team-item" :style="{ backgroundImage: 'url(' + team.backgroundImg + ')' }" :to="{path: '/paperList', query: {tid: team.id}}">
         <div class="team-content">
           <div class="team-term">{{ team.term }}</div>
           <div class="team-name">{{ team.name }}</div>
@@ -19,7 +18,7 @@
             <p>负责人： {{ team.admins }}</p>
           </div>
         </div>
-      </div>
+      </router-link>
     </div>
   </div>
 </template>
@@ -77,11 +76,10 @@ export default {
       //填入测试数据
       this.page = 1;
       this.pageSize = 10;
-      //请求历史作答记录
       const queryParams = {
         userId: store.user.id,
-        page: this.page,//需要修改
-        pageSize: this.pageSize//需要修改
+        page: this.page,
+        pageSize: this.pageSize
       }
 
       const ret = await axios.get(`${constant.host}/user/team/page`, {params: queryParams})

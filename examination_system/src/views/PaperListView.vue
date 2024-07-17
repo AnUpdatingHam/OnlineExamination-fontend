@@ -3,25 +3,8 @@
   <!-- 当前页展示的信息在displayData、所有的信息在historyData。主要区别在于是否经过搜索或分页 -->
   <div class="find">
     <div class="select">
-      <p>专业列表</p>
+      <p>考试列表</p>
     </div>
-    <el-dialog :title="isAdd ? '添加专业' : '修改专业'" v-model="addDialogVisible" width="50%" @close="addDialogClosed">
-      <!-- 内容主体区 -->
-      <el-form :model="addMajorForm" :rules="addMajorFormRules" ref="addMajorFormRef" label-width="70px">
-        <el-form-item label="专业名称" prop="name"> <!-- prop是验证规则属性 -->
-          <el-input v-model="addMajorForm.name" @input="change($event)"></el-input>
-        </el-form-item>
-      </el-form>
-      <!--底部区-->
-      <span slot="footer" class="dialog-footer">
-          <el-button @click="addDialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="handleSubmit()">确 定</el-button>
-        </span>
-    </el-dialog>
-
-    <el-col :span="3" style="position: absolute;right: 360px;">
-      <el-button type="primary" @click="handleAdd">添加专业</el-button>
-    </el-col>
     <div class="search">
       <input type="text" placeholder="搜索" v-model="state.searchValue">
       <img src="../assets/search.png">
@@ -31,27 +14,22 @@
   <table>
     <thead>
       <tr>
-        <th>专业名称</th>
+        <th>考试名称</th>
+        <th>起始时间</th>
+        <th>结束时间</th>
         <th>操作</th>
       </tr>
     </thead>
     <tbody>
-      <tr v-for="(item,index) in displayData" :key="item.id">
+      <tr v-for="item in displayData" :key="item.id">
         <td>{{ item.name }}</td>
+        <td>{{ item.beginTime }}</td>
+        <td>{{ item.endTime }}</td>
 
         <td>
-          <a href="#" @click.prevent="handleEditing(index)" style="color: #87CEFA;">
-            <img src="../assets/xiu_gai2.png" alt="Edit" width="16" height="16"> 修改
-          </a>
-          <span>&nbsp;</span> <!-- 添加一个空格 -->
-          <span>&nbsp;</span> <!-- 添加一个空格 -->
-          <span>&nbsp;</span> <!-- 添加一个空格 -->
-          <span>&nbsp;</span> <!-- 添加一个空格 -->
-          <span>&nbsp;</span> <!-- 添加一个空格 -->
-          <span>&nbsp;</span> <!-- 添加一个空格 -->
-          <a href="#" @click="deleteMajor(item.id)" style="color: #87CEFA;">
-            <img src="../assets/delete3.png" alt="Delete" width="16" height="16"> 删除
-          </a>
+          <router-link :to="{path: '/question', query: {qid: item.id, beginTime: item.beginTime, endTime: item.endTime, name: item.name}}" style="color: #87CEFA;">
+            进入考试
+          </router-link>
         </td>
       </tr>
     </tbody>
@@ -94,28 +72,14 @@ export default{
         searchValue: "",
         totalNumber: 24,    //n
       },
-      searchKeys: ["name"],
+      searchKeys: ["name", "beginTime", "endTime"],
       historyData: [],
-      addDialogVisible: false, //控制添加对话框的显示与隐藏
-      addMajorForm:{},
-      addMajorFormRules: {
-        name:[{required:true,message:'请输入专业名称',trigger:'blur'}],
-      },
       change(e){
         this.$forceUpdate()
       },
     }
   },
   methods:{
-    handleEditing(index, event){
-      this.addDialogVisible = true
-      this.isAdd = false
-      this.addMajorForm = this.displayData[index]
-    },
-    handleAdd(event){
-      this.addDialogVisible = true
-      this.isAdd = true
-    },
     handleSizeChange(){
       console.log("The size of page changed")
     },
@@ -131,98 +95,53 @@ export default{
     switchActive2(){
       this.active=-1
     },
-    //监听添加用户对话框的关闭状态
-    addDialogClosed(){
-      this.$refs.addMajorFormRef.resetFields();
-      this.getMajorList()
-    },
     handleSubmit(){
       if(this.isAdd)
         this.addPaper()
-      else this.updateMajor()
+      else this.updateExam()
     },
-    async getMajorList(){
+    formatDateArrayToString(dateArray) {
+      // 检查传入的数组是否具有6个元素
+      if (!dateArray || dateArray.length > 6) {
+        ElMessage.error("日期数组必须小于6个元素：年、月、日、小时、分钟")
+        throw new Error('日期数组必须小于6个元素：年、月、日、小时、分钟');
+      }
+      if (dateArray.length < 6) {
+        for (let i = dateArray.length; i < 6; i++) {
+          dateArray.push(0)
+        }
+      }
+      // 解构数组元素
+      const [year, month, day, hour, minute, second] = dateArray;
+
+      // 使用padStart方法确保月、日、小时和分钟是两位数格式
+      const formattedMonth = String(month).padStart(2, '0');
+      const formattedDay = String(day).padStart(2, '0');
+      const formattedHour = String(hour).padStart(2, '0');
+      const formattedMinute = String(minute).padStart(2, '0');
+
+      // 组合成最终的日期时间字符串
+      return `${year}-${formattedMonth}-${formattedDay} ${formattedHour}:${formattedMinute}`;
+    },
+    async getPaperList(){
       try {
         const queryParams = {
+          teamId: this.$route.query.tid,
           page: 1,
           pageSize: 1000
         }
-        const ret = await axios.get(`${constant.host}/user/major/page`, {params: queryParams})
+        console.log(queryParams)
+        const ret = await axios.get(`${constant.host}/user/exam/page`, {params: queryParams})
         if(ret.data.code != 1){
           ElMessage.error(ret.data.msg)
         }
         this.historyData = ret.data.data.records//总数
+        this.historyData.forEach((item) => {
+          item.beginTime = this.formatDateArrayToString(item.beginTime)
+          item.endTime = this.formatDateArrayToString(item.endTime)
+        })
       } catch(error) {
         ElMessage.error(error)
-      }
-    },
-    // 点击按钮，添加新用户
-    async addPaper(){
-      await this.$refs.addMajorFormRef.validate(async valid =>{
-        if(!valid) return;//校验没通过，返回
-        try {
-          const headersConfig = {
-            headers: {
-              'Content-Type': 'application/json', // 根据你的API要求设置正确的Content-Type
-              'Token': `${store.user.token}` // 通常Token以Bearer开头
-            }
-          }
-          const ret = await axios.post(`${constant.host}/user/major`, this.addMajorForm, headersConfig)
-          if(ret.data.code != 1){
-            ElMessage.error(ret.data.msg)
-          }
-          else{
-            // 隐藏添加用户的对话框
-            ElMessage.success("添加成功")
-            this.addDialogVisible = false;
-            //重新获取用户列表数据
-            this.getMajorList();
-          }
-        } catch(error) {
-          ElMessage.error(error)
-        }
-      })
-    },
-    async updateMajor() {
-      await this.$refs.addMajorFormRef.validate(async valid =>{
-        if(!valid) return;//校验没通过，返回
-        try {
-          const headersConfig = {
-            headers: {
-              'Content-Type': 'application/json', // 根据你的API要求设置正确的Content-Type
-              'Token': `${store.user.token}` // 通常Token以Bearer开头
-            }
-          }
-          const ret = await axios.put(`${constant.host}/user/major`, this.addMajorForm, headersConfig)
-          if(ret.data.code != 1){
-            ElMessage.error(ret.data.msg)
-          }
-          else{
-            // 隐藏添加用户的对话框
-            ElMessage.success("修改成功")
-            this.addDialogVisible = false;
-            //重新获取用户列表数据
-            this.getMajorList();
-            
-          }
-        } catch(error) {
-          ElMessage.error(error)
-        }
-      })
-    },
-    async deleteMajor(targetId) {
-      try {
-        const headersConfig = {
-          headers: {
-            'Content-Type': 'application/json', // 根据你的API要求设置正确的Content-Type
-            'Token': `${store.user.token}` // 通常Token以Bearer开头
-          }
-        }
-        const ret = await axios.delete(`${constant.host}/user/major/${targetId}`, headersConfig)
-        console.log(JSON.stringify(ret))
-        this.historyData = this.historyData.filter((item) => item.id != targetId)
-      } catch(error) {
-        ElMessage.error("error")
       }
     },
   },
@@ -277,7 +196,7 @@ export default{
     }
   },
   async created() {
-    await this.getMajorList()
+    await this.getPaperList()
   }
 }
 </script>

@@ -1,10 +1,9 @@
 <template>
   <div class="question-list">
     <div class="paper-header">
-      <h2>{{team.name}}</h2>
-      <h2>{{exam.name}}</h2>
-      <p>开始时间: {{exam.beginTime}}</p>
-      <p>结束时间: {{exam.endTime}}</p>
+      <h2>{{this.$route.query.name}}</h2>
+      <p>开始时间: {{this.$route.query.beginTime}}</p>
+      <p>结束时间: {{this.$route.query.endTime}}</p>
     </div>
     <div class="question-list-container">
       <div v-for="(question, index) in questions" :key="question.id" class="question-item">
@@ -145,9 +144,9 @@ export default {
       //请求历史作答记录
       const queryParams = {
         userId: store.user.id,
-        examId: store.exam.id,
-        page: this.page,//需要修改
-        pageSize: this.pageSize//需要修改
+        examId: this.$route.query.qid,
+        page: this.page,
+        pageSize: this.pageSize
       }
 
       const ret = await axios.get(`${constant.host}/user/exam/records/page`, {params: queryParams})

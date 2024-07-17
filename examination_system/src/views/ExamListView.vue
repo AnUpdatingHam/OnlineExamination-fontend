@@ -76,7 +76,6 @@ export default {
         this.exams[i].endTime = this.formatDateArrayToString(this.exams[i].endTime)
       }
       console.log(JSON.stringify(ret))
-      //根据历史作答和试卷渲染页面
 
     } catch(error) {
       ElMessage.error(error)
