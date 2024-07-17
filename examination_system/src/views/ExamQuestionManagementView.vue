@@ -29,30 +29,15 @@
         <th>图片</th>
         <th>候选答案</th>
         <th>正确答案</th>
-        <th>操作</th>
       </tr>
     </thead>
     <tbody>
-      <tr v-for="(item,index) in displayData" :key="item.id">
+      <tr v-for="item in displayData" :key="item.id">
         <td>{{ item.text }}</td>
         <td>{{ item.type === 0 ? '单选题' : item.type === 1 ? '多选题' : '正误题' }}</td>
         <td class="img-td"><img :src="item.imageUrls != null ? item.imageUrls : 'https://img2.baidu.com/it/u=2784875309,3146305990&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=571'" alt="试题图片"></td>
         <td>{{ item.candidateAns }}</td>
         <td>{{ item.rightAnsExpression }}</td>
-        <td>
-          <a href="#" @click.prevent="handleEditing(index)" style="color: #87CEFA;">
-            <img src="../assets/xiu_gai2.png" alt="Edit" width="16" height="16"> 修改
-          </a>
-          <span>&nbsp;</span> <!-- 添加一个空格 -->
-          <span>&nbsp;</span> <!-- 添加一个空格 -->
-          <span>&nbsp;</span> <!-- 添加一个空格 -->
-          <span>&nbsp;</span> <!-- 添加一个空格 -->
-          <span>&nbsp;</span> <!-- 添加一个空格 -->
-          <span>&nbsp;</span> <!-- 添加一个空格 -->
-          <a href="#" @click="deleteQuetion(item.id)" style="color: #87CEFA;">
-            <img src="../assets/delete3.png" alt="Delete" width="16" height="16"> 删除
-          </a>
-        </td>
       </tr>
     </tbody>
   </table>
