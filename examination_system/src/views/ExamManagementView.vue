@@ -64,6 +64,15 @@
           <span>&nbsp;</span> <!-- 添加一个空格 -->
           <span>&nbsp;</span> <!-- 添加一个空格 -->
           <span>&nbsp;</span> <!-- 添加一个空格 -->
+          <router-link :to="{path: '/admin/examQestion', query: {eid: item.id, ename: item.name}}" style="color: #87CEFA;">
+            <img src="../assets/xiu_gai2.png" alt="Edit" width="16" height="16"> 修改试题
+          </router-link>
+          <span>&nbsp;</span> <!-- 添加一个空格 -->
+          <span>&nbsp;</span> <!-- 添加一个空格 -->
+          <span>&nbsp;</span> <!-- 添加一个空格 -->
+          <span>&nbsp;</span> <!-- 添加一个空格 -->
+          <span>&nbsp;</span> <!-- 添加一个空格 -->
+          <span>&nbsp;</span> <!-- 添加一个空格 -->
           <a href="#" @click="deletePaper(item.id)" style="color: #87CEFA;">
             <img src="../assets/delete3.png" alt="Delete" width="16" height="16"> 删除
           </a>
@@ -73,8 +82,9 @@
           <span>&nbsp;</span> <!-- 添加一个空格 -->
           <span>&nbsp;</span> <!-- 添加一个空格 -->
           <router-link :to="{path: '/admin/examScoreList', query: {eid: item.id, ename: item.name}}" style="color: #87CEFA;">
-            查看
+            查看分数列表
           </router-link>
+
         </td>
       </tr>
     </tbody>
