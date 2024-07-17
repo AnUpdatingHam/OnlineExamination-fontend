@@ -11,6 +11,9 @@
         <el-form-item label="考试名称" prop="name"> <!-- prop是验证规则属性 -->
           <el-input v-model="addPaperForm.name" @input="change($event)"></el-input>
         </el-form-item>
+        <el-form-item label="所属课群" prop="teamId"> <!-- prop是验证规则属性 -->
+          <el-input v-model="addPaperForm.teamId" @input="change($event)"></el-input>
+        </el-form-item>
         <el-form-item label="起始时间" prop="beginTime"> <!-- prop是验证规则属性 -->
           <el-input v-model="addPaperForm.beginTime" @input="change($event)"></el-input>
         </el-form-item>
@@ -38,6 +41,7 @@
     <thead>
       <tr>
         <th>考试名称</th>
+        <th>所属课群</th>
         <th>起始时间</th>
         <th>结束时间</th>
         <th>操作</th>
@@ -46,6 +50,7 @@
     <tbody>
       <tr v-for="(item,index) in displayData" :key="item.id">
         <td>{{ item.name }}</td>
+        <td>{{ item.teamId }}</td>
         <td>{{ item.beginTime }}</td>
         <td>{{ item.endTime }}</td>
 
@@ -118,8 +123,9 @@ export default{
       addPaperForm:{},
       addPaperFormRules: {
         name:[{required:true,message:'请输入考试名称',trigger:'blur'}],
-        term: [{required:true,message:'请输入起始时间',trigger:'blur'}],
-        admins: [{required:true,message:'请输入结束时间',trigger:'blur'}],
+        teamId: [{required:true,message:'请输入所属课群id',trigger:'blur'}],
+        beginTime: [{required:true,message:'请输入起始时间',trigger:'blur'}],
+        endTime: [{required:true,message:'请输入结束时间',trigger:'blur'}],
       },
       change(e){
         this.$forceUpdate()
@@ -236,8 +242,8 @@ export default{
         try {
           const headersConfig = {
             headers: {
-              'Content-Type': 'application/json', // 根据你的API要求设置正确的Content-Type
-              'Token': `${store.user.token}` // 通常Token以Bearer开头
+              'Content-Type': 'application/json', // 根据API要求设置正确的Content-Type
+              'Token': `${store.user.token}`
             }
           }
           const ret = await axios.put(`${constant.host}/user/exam`, this.addPaperForm, headersConfig)
@@ -245,10 +251,9 @@ export default{
             ElMessage.error(ret.data.msg)
           }
           else{
-            // 隐藏添加用户的对话框
             ElMessage.success("修改成功")
             this.addDialogVisible = false;
-            //重新获取用户列表数据
+            //重新获取试卷列表数据
             this.getPaperList();
             
           }
@@ -261,8 +266,8 @@ export default{
       try {
         const headersConfig = {
           headers: {
-            'Content-Type': 'application/json', // 根据你的API要求设置正确的Content-Type
-            'Token': `${store.user.token}` // 通常Token以Bearer开头
+            'Content-Type': 'application/json', // 根据API要求设置正确的Content-Type
+            'Token': `${store.user.token}`
           }
         }
         const ret = await axios.delete(`${constant.host}/user/exam/${targetId}`, headersConfig)
