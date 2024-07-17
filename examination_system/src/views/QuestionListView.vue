@@ -145,9 +145,9 @@ export default {
       //请求历史作答记录
       const queryParams = {
         userId: store.user.id,
-        examId: store.exam.id,
-        page: this.page,//需要修改
-        pageSize: this.pageSize//需要修改
+        examId: this.$route.query.qid,
+        page: this.page,
+        pageSize: this.pageSize
       }
 
       const ret = await axios.get(`${constant.host}/user/exam/records/page`, {params: queryParams})

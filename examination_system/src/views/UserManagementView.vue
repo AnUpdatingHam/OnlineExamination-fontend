@@ -31,7 +31,7 @@
       </span>
     </el-dialog>
 
-    <el-col :span="3" style="  position: absolute;right: 360px;">
+    <el-col :span="3" style="position: absolute;right: 360px;">
       <el-button type="primary" @click="handleAdd">添加用户</el-button>
     </el-col>
     <div class="search">

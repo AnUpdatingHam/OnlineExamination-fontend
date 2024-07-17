@@ -45,7 +45,6 @@ const LogOut = ()=>{
   store.login=false
   removeCookies()
   Object.keys(store.user).forEach((key) => delete(store.user[key]));
-  
 }
 
 const loginAppear=ref(false)
