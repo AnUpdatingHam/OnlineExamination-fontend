@@ -11,6 +11,7 @@ const router = createRouter({
 
         { path: '/admin/team', name: 'teamManagement', component: () => import('../views/TeamManagementView.vue')},
         { path: '/admin/exam', name: 'examManagement', component: () => import('../views/ExamManagementView.vue')},
+        { path: '/admin/examQestion', name: 'examQestion', component: () => import('../views/ExamQuestionManagementView.vue')},
         { path: '/admin/user', name: 'userManagement', component: () => import('../views/UserManagementView.vue')},
         { path: '/admin/question', name: 'questionManagement', component: () => import('../views/QuestionManagementView.vue')},
         { path: '/admin/examScoreList', name: 'examScoreList', component: () => import('../views/ExamScoreListView.vue')},
