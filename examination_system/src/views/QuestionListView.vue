@@ -4,8 +4,10 @@
       <h2>{{this.$route.query.name}}</h2>
       <p>开始时间: {{this.$route.query.beginTime}}</p>
       <p>结束时间: {{this.$route.query.endTime}}</p>
+      <p>{{ (timeState === 1 && !submitted)? `当前时间: ${nowTime}` : "" }}</p>
+      <p>{{ timeState === 0? ("考试未开始") : (timeState === 1? (submitted? "已交卷": "") : "考试已结束") }}</p>
     </div>
-    <div class="question-list-container">
+    <div class="question-list-container" v-if="!(timeState === 0)">
       <div v-for="(question, index) in questions" :key="question.id" class="question-item">
         <div class="question-header">
           <span class="question-number">问题 {{ index + 1 }}</span>
@@ -16,23 +18,25 @@
           <ul class="options-list">
             <li v-for="(option, optionIndex) in question.options" :key="optionIndex">
 <!--              <div class="Radio">-->
-                <input type="radio" :id="`option-${index}-${optionIndex}`" :name="`question-${index}`" v-model="questions[index].ans" :disabled="submitted" :value="optionIndex" @change="recordAnsChange(index)">
+                <input :type="(questions[index].type === 0 || questions[index].type === 10) ? 'radio' : 'checkbox'"
+                       :id="`option-${index}-${optionIndex}`" :name="`question-${index}`" v-model="questions[index].ans"
+                       :disabled="submitted" :value="optionIndex" @change="recordAnsChange(index)">
                 <label :for="`option-${index}-${optionIndex}`">{{ option }}</label>
 <!--              </div>-->
             </li>
           </ul>
           <!-- Show correct answer and analysis after submission -->
-          <div v-if="submitted" class="answer-analysis">
+          <div v-if="timeState === 2 || submitted" class="answer-analysis">
             <p style="color: red;">正确答案：{{ question.options[question.correctAnswer] }}</p>
             <p class="analysis">解析：{{ question.analysis }}</p>
           </div>
         </div>
       </div>
     </div>
-    <div v-if="!submitted" class="paper-footer">
+    <div v-if="timeState === 1 && !submitted" class="paper-footer">
       <button class="submit-button" @click="submitPaper">交 卷</button>
     </div>
-    <div v-if="submitted" class="result-container">
+    <div v-if="timeState === 2 || submitted" class="result-container">
       <h3 style="color: #e83232">你的成绩：{{ totalScore }} 分</h3>
     </div>
   </div>
@@ -49,6 +53,8 @@ export default {
     return {
       team: store.team,
       exam: store.exam,
+      nowTime: null,
+      timeState: null,
       records: [
       {
         "questionId": 0,
@@ -111,6 +117,9 @@ export default {
     }
   },
   methods: {
+    getRemainTime() {
+      this.nowTime = new Date(new Date().getTime() + 8 * 60 * 60 * 1000).toISOString().replace(/T/, ' ').replace(/\..+/, '').substring(0, 19);
+    },
     submitPaper() {
       this.submitted = true;
     },
@@ -135,8 +144,27 @@ export default {
       }
     }
   },
-
+  watch: {
+    'this.nowTime': {
+      deep: true,
+      immediate: true,
+      handler() {
+        var curDate = new Date(),
+            beginDate = new Date(this.$route.query.beginTime + ":00"),
+            endDate = new Date(this.$route.query.endTime + ":00");
+        if (curDate >= beginDate && curDate <= endDate) {
+          this.timeState = 1;
+        }
+        else if (curDate < beginDate) {
+          this.timeState = 0;
+        }
+        else this.timeState = 2;
+      }
+    }
+  },
   async created() {
+    this.getRemainTime()
+    this.nowTimer = setInterval(this.getRemainTime, 1000)
     try {
       //填入测试数据
       this.page = 1;
@@ -150,7 +178,6 @@ export default {
       }
 
       const ret = await axios.get(`${constant.host}/user/exam/records/page`, {params: queryParams})
-      console.log(JSON.stringify(ret))
       this.records = ret.data.data.records
       this.questions = this.records
       for (let i = 0; i < this.questions.length; i++) {

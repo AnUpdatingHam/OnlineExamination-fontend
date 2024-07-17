@@ -1,23 +1,20 @@
 <template>
   <div class="header"> <!-- 这里是header的开始 -->
     <div class="left">
-      <span>"{{team.name}}"的考试</span>
-    </div>
-    <div class="right">
-      <el-button type="primary" @click="goToAddCourse">添加课群</el-button>
+      <span>{{this.$route.query.tname}}的考试</span>
     </div>
   </div>
   <div class="team-container">
     <div class="team-grid">
       <!-- 循环显示所有考试 -->
-      <div v-for="(exam, index) in exams" :key="index" class="team-item" :style="{ backgroundImage: 'url(' + exam.backgroundImg + ')' }"
-      @click="gotoQuestion(index)">
+      <router-link v-for="(exam, index) in exams" :key="index" class="team-item" :style="{ backgroundImage: 'url(' + exam.backgroundImg + ')' }"
+      :to="{path: '/question', query: {qid: exam.id, beginTime: exam.beginTime, endTime: exam.endTime, name: exam.name}}">
         <div class="team-content">
           <div class="team-name">{{ exam.name }}</div>
           <div class="team-term">开始时间: {{ exam.beginTime }}</div>
           <div class="team-term">结束时间: {{ exam.endTime }}</div>
         </div>
-      </div>
+      </router-link>
     </div>
   </div>
 </template>
