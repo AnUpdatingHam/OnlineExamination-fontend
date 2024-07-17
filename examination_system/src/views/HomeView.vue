@@ -17,7 +17,8 @@ const readCookies = () => {
   if(userCk["id"]) {
     store.user = userCk
     store.login=true
-    console.log("读取cookie成功, store.user = ", store.user)
+    store.isAdmin = ($cookies.get("isAdmin") === 'false')? false : true
+    console.log("读取cookie成功, store = ", store)
   }
   else console.log("读取cookie失败或没有cookie, idCk = ", userCk["id"])
 }

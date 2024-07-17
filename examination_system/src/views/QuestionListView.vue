@@ -27,8 +27,7 @@
           </ul>
           <!-- Show correct answer and analysis after submission -->
           <div v-if="timeState === 2 || submitted" class="answer-analysis">
-            <p style="color: red;">正确答案：{{ question.options[question.correctAnswer] }}</p>
-            <p class="analysis">解析：{{ question.analysis }}</p>
+            <p style="color: red;">正确答案：{{ question.correctAnswer }}</p>
           </div>
         </div>
       </div>
@@ -188,14 +187,13 @@ export default {
       this.page = 1;
       this.pageSize = 10;
       //请求历史作答记录
-      const queryParams = {
+      let queryParams = {
         userId: store.user.id,
         examId: this.$route.query.qid,
         page: this.page,
         pageSize: this.pageSize
       }
-
-      const ret = await axios.get(`${constant.host}/user/exam/records/page`, {params: queryParams})
+      let ret = await axios.get(`${constant.host}/user/exam/records/page`, {params: queryParams})
       console.log("data = " + JSON.stringify(ret.data))
       this.records = ret.data.data.records
       this.questions = this.records
@@ -203,8 +201,19 @@ export default {
         this.questions[i].options = this.records[i].candidateAns.split(' ')
         this.questions[i].correctAnswerArray = this.questions[i].rightAns.split(' ')
         this.questions[i].ansArray = this.questions[i].ans.split(' ')
+        this.questions[i].correctAnswer = ''
+        for(let j = 0; j < this.questions[i].correctAnswerArray.length; ++j) {
+          if(this.questions[i].correctAnswerArray[j] == '1' || this.questions[i].correctAnswerArray[j] == 'true')
+          this.questions[i].correctAnswer += this.questions[i].options[j] + ' '
+        }
       }
-      //根据历史作答和试卷渲染页面
+      //请求交卷记录
+      queryParams = {
+        userId: store.user.id,
+        examId: this.$route.query.qid
+      }
+      ret = await axios.get(`${constant.host}/user/exam/score`, {params: queryParams})
+      this.submitted = (ret.data.data.score != null)
 
     } catch(error) {
       console.error("Getting Data Error:", error)

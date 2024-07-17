@@ -13,7 +13,7 @@ const router = createRouter({
         { path: '/admin/exam', name: 'examManagement', component: () => import('../views/ExamManagementView.vue')},
         { path: '/admin/user', name: 'userManagement', component: () => import('../views/UserManagementView.vue')},
         { path: '/admin/question', name: 'questionManagement', component: () => import('../views/QuestionManagementView.vue')},
-
+        { path: '/admin/examScoreList', name: 'examScoreList', component: () => import('../views/ExamScoreListView.vue')},
         { path: '/:pathMatch(.*)*', name: 'noFound', component: () => import('../views/NoFoundVue.vue')}
     ]
 })
