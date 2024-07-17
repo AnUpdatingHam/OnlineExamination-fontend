@@ -27,18 +27,20 @@
               <!--              </div>-->
             </li>
           </ul>
+            <!-- Show correct answer and analysis after submission -->
+            <div v-if="timeState === 2 || submitted" class="answer-analysis">
+              <p style="color: red;">正确答案：{{ question.correctAnswer }}</p>
+
+            </div>
         </div>
+
           <div class="question-image">
             <img :src=question.imageUrls >
           </div>
 
 
 
-          <!-- Show correct answer and analysis after submission -->
-          <div v-if="timeState === 2 || submitted" class="answer-analysis">
-            <p style="color: red;">正确答案：{{ question.correctAnswer }}</p>
 
-          </div>
         </div>
       </div>
     </div>
@@ -348,7 +350,7 @@ export default {
   font-weight: bold;
 }
 .question-image img{
-  width: auto; /* 图片宽度自动 */
+  width: auto;
   height: 300px; /* 图片高度自动 */
 
   margin-left: auto; /* 将图片推到右侧 */
