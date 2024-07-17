@@ -28,18 +28,12 @@ const collapseAside = () => {
 
 //清除用户信息cookies
 const removeCookies = () => {
-  const userObjKeys = Object.keys(store.user)
-  for(let i = 0; i < userObjKeys.length; ++i) {
-    $cookies.remove(userObjKeys[i])
-  }
+  Object.keys(store.user).forEach((key) => $cookies.remove(key))
 }
 
 //保存用户信息到cookie
 const setCookies = () => {
-  const userObjKeys = Object.keys(store.user)
-  for(let i = 0; i < userObjKeys.length; ++i) {
-    $cookies.set(userObjKeys[i], store.user[userObjKeys[i]])
-  }
+  Object.keys(store.user).forEach((key) => $cookies.set(key, store.user[key]))
 }
 //监听登录信息，修改cookies
 watch(() => store.user, () => {
@@ -49,11 +43,9 @@ watch(() => store.user, () => {
 // 登出按钮
 const LogOut = ()=>{
   store.login=false
-  const userObjKeys = Object.keys(store.user)
-  for(let key of userObjKeys) {
-    store.user[key] = ''
-  }
   removeCookies()
+  Object.keys(store.user).forEach((key) => delete(store.user[key]));
+  
 }
 
 const loginAppear=ref(false)
