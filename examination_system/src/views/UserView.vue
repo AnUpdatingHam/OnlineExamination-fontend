@@ -61,6 +61,7 @@
 import { ElButton, ElMessage, ElLoading } from 'element-plus';
 import axios from 'axios';
 import {store} from "../stores/store";
+import {constant} from "@/stores/constant";
 
 export default {
   name: 'UserProfile',
@@ -89,12 +90,12 @@ export default {
   },
   methods: {
     toggleEdit(field) {
-      this.isEditing = true;
+      this.isEditing = !this.isEditing;
       this.editingField = field;
       if (field === 'phone') {
-        this.phoneEdit = this.phone;
+        this.phoneEdit = store.user.phone;
       } else if (field === 'email') {
-        this.emailEdit = this.email;
+        this.emailEdit = store.user.email;
       }
     },
     async saveAvatar() {
@@ -129,8 +130,18 @@ export default {
     },
     async savePhone() {
       this.showLoading('正在保存手机号...');
+      const headersConfig = {
+        headers: {
+          'Content-Type': 'application/json', // 根据你的API要求设置正确的Content-Type
+          'Token': `${store.user.token}` // 通常Token以Bearer开头
+        }
+      }
+      let putData = {
+        id: store.user.id,
+        phone: this.phoneEdit
+      }
       try {
-        const response = await axios.post('/api/user/update/phone', { phone: this.phoneEdit });
+        const response = await axios.put(`${constant.host}/user/user`, putData, headersConfig);
 
         if (response.status === 200 && response.data) {
           console.log('手机号保存成功', response.data);
@@ -150,9 +161,18 @@ export default {
     },
     async saveEmail() {
       this.showLoading('正在保存邮箱...');
+      const headersConfig = {
+        headers: {
+          'Content-Type': 'application/json', // 根据你的API要求设置正确的Content-Type
+          'Token': `${store.user.token}` // 通常Token以Bearer开头
+        }
+      }
+      let putData = {
+        id: store.user.id,
+        email: this.emailEdit
+      }
       try {
-        const response = await axios.post('/api/user/update/email', { email: this.emailEdit });
-
+        const response = await axios.put(`${constant.host}/user/user`, putData, headersConfig);
         if (response.status === 200 && response.data) {
           console.log('邮箱保存成功', response.data);
           store.user.email = this.emailEdit;//改到store.user
