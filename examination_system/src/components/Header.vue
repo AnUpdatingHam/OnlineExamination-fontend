@@ -29,11 +29,14 @@ const collapseAside = () => {
 //清除用户信息cookies
 const removeCookies = () => {
   Object.keys(store.user).forEach((key) => $cookies.remove(key))
+  $cookies.remove("isAdmin")
 }
 
 //保存用户信息到cookie
 const setCookies = () => {
   Object.keys(store.user).forEach((key) => $cookies.set(key, store.user[key]))
+  $cookies.set("isAdmin", store.isAdmin)
+  console.log($cookies.get('isAdmin'), store.isAdmin)
 }
 //监听登录信息，修改cookies
 watch(() => store.user, () => {
@@ -86,8 +89,9 @@ async function sendLoginRequest() {
       const responseInfo = await axios.get(`${constant.host}/${store.isAdmin ? "admin" : "user"}/${store.isAdmin ? "admin" : "user"}/${responseLogin.data.data.id}`);
       store.user = responseInfo.data.data
       store.user.token = responseLogin.data.data.token
+      
       loginAppear.value=false
-      console.log(store.user) //TODO: 打印日志，测试完毕可以删去
+      console.log(store) //TODO: 打印日志，测试完毕可以删去
     }
     else{
       ElMessage.error(responseLogin.data.msg)

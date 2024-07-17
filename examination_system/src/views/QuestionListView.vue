@@ -27,8 +27,7 @@
           </ul>
           <!-- Show correct answer and analysis after submission -->
           <div v-if="timeState === 2 || submitted" class="answer-analysis">
-            <p style="color: red;">正确答案：{{ question.options[question.correctAnswer] }}</p>
-            <p class="analysis">解析：{{ question.analysis }}</p>
+            <p style="color: red;">正确答案：{{ question.correctAnswer }}</p>
           </div>
         </div>
       </div>
@@ -203,6 +202,11 @@ export default {
         this.questions[i].options = this.records[i].candidateAns.split(' ')
         this.questions[i].correctAnswerArray = this.questions[i].rightAns.split(' ')
         this.questions[i].ansArray = this.questions[i].ans.split(' ')
+        this.questions[i].correctAnswer = ''
+        for(let j = 0; j < this.questions[i].correctAnswerArray.length; ++j) {
+          if(this.questions[i].correctAnswerArray[j] == '1' || this.questions[i].correctAnswerArray[j] == 'true')
+          this.questions[i].correctAnswer += this.questions[i].options[j] + ' '
+        }
       }
       //根据历史作答和试卷渲染页面
 
