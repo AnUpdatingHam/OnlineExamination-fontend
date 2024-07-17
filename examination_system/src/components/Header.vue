@@ -82,10 +82,8 @@ async function sendLoginRequest() {
         });
     if(responseLogin.data.code===1){
       ElMessage.success("登陆成功")
-
       store.login=true
-      
-      const responseInfo = await axios.get(`${constant.host}/user/user/${responseLogin.data.data.id}`);
+      const responseInfo = await axios.get(`${constant.host}/${store.isAdmin ? "admin" : "user"}/${store.isAdmin ? "admin" : "user"}/${responseLogin.data.data.id}`);
       store.user = responseInfo.data.data
       store.user.token = responseLogin.data.data.token
       loginAppear.value=false
