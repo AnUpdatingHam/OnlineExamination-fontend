@@ -6,13 +6,13 @@
       <p style="font-size: 28px">{{this.$route.query.ename}}试题列表</p>
     </div>
 
-    <el-col :span="3" style="position: absolute;right: 360px;">
-      <el-button type="primary" @click="handleConfirm">确认试题</el-button>
-    </el-col>
-    <el-col :span="3" style="position: absolute;right: 480px;">
-      <el-button type="primary" @click="historyData = originalQuestions">原试题</el-button>
-    </el-col>
-    <el-col :span="3" style="position: absolute;right: 600px;">
+<!--    <el-col :span="3" style="position: absolute;right: 360px;">-->
+<!--      <el-button type="primary" @click="handleConfirm">确认试题</el-button>-->
+<!--    </el-col>-->
+<!--    <el-col :span="3" style="position: absolute;right: 480px;">-->
+<!--      <el-button type="primary" @click="historyData = originalQuestions">原试题</el-button>-->
+<!--    </el-col>-->
+    <el-col :span="3"  style="position: absolute;right: 360px;">
       <el-button type="primary" @click="handleRdSelect">抽取试题</el-button>
     </el-col>
     <div class="search">
@@ -116,12 +116,11 @@ export default{
           ElMessage.error(ret.data.msg)
         }
       } catch(error) {
-        ElMessage.error(error)
-        console.log("error", getAll)
+        //ElMessage.error(error)
+        await this.queryQuestionList(false)
+        this.originalQuestions = this.modifyQuestionsData(this.records)
+        this.historyData = this.modifyQuestionsData(this.records)
       }
-      await this.queryQuestionList(false)
-      this.originalQuestions = this.modifyQuestionsData(this.records)
-      this.historyData = this.modifyQuestionsData(this.records)
     },
     modifyQuestionsData(records) {
       let Data = records

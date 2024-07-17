@@ -174,7 +174,7 @@ export default{
     },
     handleSubmit(){
       if(this.isAdd)
-        this.addPaper()
+        this.addExam()
       else this.updateExam()
     },
     formatDateArrayToString(dateArray) {
@@ -211,16 +211,12 @@ export default{
           ElMessage.error(ret.data.msg)
         }
         this.historyData = ret.data.data.records//总数
-        this.historyData.forEach((item) => {
-          item.beginTime = this.formatDateArrayToString(item.beginTime)
-          item.endTime = this.formatDateArrayToString(item.endTime)
-        })
       } catch(error) {
         ElMessage.error(error)
       }
     },
     // 点击按钮，添加新用户
-    async addPaper(){
+    async addExam(){
       await this.$refs.addPaperFormRef.validate(async valid =>{
         if(!valid) return;//校验没通过，返回
         try {
@@ -256,7 +252,10 @@ export default{
               'Token': `${store.user.token}`
             }
           }
-          const ret = await axios.put(`${constant.host}/user/exam`, this.addPaperForm, headersConfig)
+          let form = this.addPaperForm
+          //form.beginTime += ":00"
+          //form.endTime += ":00"
+          const ret = await axios.put(`${constant.host}/user/exam`, form, headersConfig)
           if(ret.data.code != 1){
             ElMessage.error(ret.data.msg)
           }
