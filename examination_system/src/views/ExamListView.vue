@@ -69,8 +69,8 @@ export default {
       this.exams = ret.data.data.records
       for(let i = 0; i < this.exams.length ; i++){
         this.exams[i].backgroundImg = constant.backgroundImg[(i + 14) % 8]
-        this.exams[i].beginTime = this.formatDateArrayToString(this.exams[i].beginTime)
-        this.exams[i].endTime = this.formatDateArrayToString(this.exams[i].endTime)
+        //this.exams[i].beginTime = this.formatDateArrayToString(this.exams[i].beginTime)
+        //this.exams[i].endTime = this.formatDateArrayToString(this.exams[i].endTime)
       }
       console.log(JSON.stringify(ret))
 
