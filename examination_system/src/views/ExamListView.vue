@@ -60,7 +60,7 @@ export default {
       //请求历史作答记录
       const queryParams = {
         userId: store.user.id,
-        teamId: store.team.id,
+        teamId: this.$route.query.tid,
         page: this.page,//需要修改
         pageSize: this.pageSize//需要修改
       }
