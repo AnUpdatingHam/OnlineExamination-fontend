@@ -67,7 +67,7 @@
           <span>&nbsp;</span> <!-- 添加一个空格 -->
           <span>&nbsp;</span> <!-- 添加一个空格 -->
           <span>&nbsp;</span> <!-- 添加一个空格 -->
-          <router-link :to="{path: '/question', query: {qid: item.id}}" style="color: #87CEFA;">
+          <router-link :to="{path: '/question', query: {qid: item.id, beginTime: item.beginTime, endTime: item.endTime, name: item.name}}" style="color: #87CEFA;">
             查看
           </router-link>
         </td>

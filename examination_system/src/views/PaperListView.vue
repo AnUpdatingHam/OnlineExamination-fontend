@@ -27,7 +27,7 @@
         <td>{{ item.endTime }}</td>
 
         <td>
-          <router-link :to="{path: '/question', query: {qid: item.id}}" style="color: #87CEFA;">
+          <router-link :to="{path: '/question', query: {qid: item.id, beginTime: item.beginTime, endTime: item.endTime, name: item.name}}" style="color: #87CEFA;">
             进入考试
           </router-link>
         </td>
