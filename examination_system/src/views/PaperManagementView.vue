@@ -29,7 +29,7 @@
         </span>
     </el-dialog>
 
-    <el-col :span="4">
+    <el-col :span="3" style="position: absolute;right: 360px;">
       <el-button type="primary" @click="handleAdd">添加考试</el-button>
     </el-col>
     <div class="search">
@@ -329,7 +329,7 @@ export default{
 
 .find{
   display: flex;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   align-items: center;
   margin: 70px;
   margin-bottom:10px;
@@ -337,6 +337,8 @@ export default{
 
 .find .select{
   display: flex;
+  position: absolute;
+  left: 170px;
 }
 
 .find .select p{
@@ -370,7 +372,9 @@ export default{
 .search{
   display: flex;
   align-items: center;
-  margin-right:240px;
+  /* margin-right:240px; */
+  position: absolute;
+  right: 300px;
 }
 
 .search input{

@@ -4,7 +4,7 @@ import HomeView from '../views/HomeView.vue'
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
-        { path: '/', name: 'home', component: () => import('../views/IndexView.vue')},
+        { path: '/', name: 'home', component: () => import('../views/UserManagementView.vue')},
         { path: '/team', name: 'team', component: () => import('../views/TeamListView.vue')},
         { path: '/exam', name: 'exam', component: () => import('../views/ExamListView.vue')},
         { path: '/user', name: 'user', component: () => import('../views/UserView.vue')},

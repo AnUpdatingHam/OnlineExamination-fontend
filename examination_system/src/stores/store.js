@@ -3,8 +3,8 @@ import { reactive } from 'vue'
 export const store = reactive({
   login: false,
   user: {
-    id: 0,
-    username: "未登录",
+    id: null,
+    username: "",
     token: '',
     stuId: '',
     phone: '',
