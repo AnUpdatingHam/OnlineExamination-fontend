@@ -187,14 +187,13 @@ export default {
       this.page = 1;
       this.pageSize = 10;
       //请求历史作答记录
-      const queryParams = {
+      let queryParams = {
         userId: store.user.id,
         examId: this.$route.query.qid,
         page: this.page,
         pageSize: this.pageSize
       }
-
-      const ret = await axios.get(`${constant.host}/user/exam/records/page`, {params: queryParams})
+      let ret = await axios.get(`${constant.host}/user/exam/records/page`, {params: queryParams})
       console.log("data = " + JSON.stringify(ret.data))
       this.records = ret.data.data.records
       this.questions = this.records
@@ -208,7 +207,13 @@ export default {
           this.questions[i].correctAnswer += this.questions[i].options[j] + ' '
         }
       }
-      //根据历史作答和试卷渲染页面
+      //请求交卷记录
+      queryParams = {
+        userId: store.user.id,
+        examId: this.$route.query.qid
+      }
+      ret = await axios.get(`${constant.host}/user/exam/score`, {params: queryParams})
+      this.submitted = (ret.data.data.score != null)
 
     } catch(error) {
       console.error("Getting Data Error:", error)
