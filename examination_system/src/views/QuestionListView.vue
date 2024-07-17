@@ -13,21 +13,31 @@
           <span class="question-number">问题 {{ index + 1 }}</span>
           <span class="question-score">（{{ question.score }} 分）</span>
         </div>
-        <div class="question-body">
+        <div  class="question-body">
+          <div class="question-text-and-option">
           <p>{{ question.text }}</p>
           <ul class="options-list">
             <li v-for="(option, optionIndex) in question.options" :key="optionIndex">
-<!--              <div class="Radio">-->
-                <input :type="(questions[index].type === 0 || questions[index].type === 10) ? 'radio' : 'checkbox'"
-                       :id="`option-${index}-${optionIndex}`" :name="`question-${index}`" v-model="questions[index].ansArray[optionIndex]"
-                       :disabled="submitted" :value="1" @change="recordAnsChange(index, optionIndex)">
-                <label :for="`option-${index}-${optionIndex}`">{{ option }}</label>
-<!--              </div>-->
+              <!--              <div class="Radio">-->
+
+              <input :type="(questions[index].type === 0 || questions[index].type === 10) ? 'radio' : 'checkbox'"
+                     :id="`option-${index}-${optionIndex}`" :name="`question-${index}`" v-model="questions[index].ansArray[optionIndex]"
+                     :disabled="submitted" :value="1" @change="recordAnsChange(index, optionIndex)">
+              <label :for="`option-${index}-${optionIndex}`">{{ option }}</label>
+              <!--              </div>-->
             </li>
           </ul>
+        </div>
+          <div class="question-image">
+            <img :src=question.imageUrls >
+          </div>
+
+
+
           <!-- Show correct answer and analysis after submission -->
           <div v-if="timeState === 2 || submitted" class="answer-analysis">
             <p style="color: red;">正确答案：{{ question.correctAnswer }}</p>
+
           </div>
         </div>
       </div>
@@ -297,10 +307,13 @@ export default {
 .options-list {
   list-style-type: none;
   padding: 5px;
+  text-align: left;
+
 }
 
 .options-list li {
   margin-bottom: 5px;
+
 }
 
 .submit-button {
@@ -333,5 +346,19 @@ export default {
 .analysis {
   color: #e83232;
   font-weight: bold;
+}
+.question-image img{
+  width: auto; /* 图片宽度自动 */
+  height: 300px; /* 图片高度自动 */
+
+  margin-left: auto; /* 将图片推到右侧 */
+  object-fit: cover;
+}
+.question-body{
+  display: flex;
+  align-items: flex-start; /* 垂直顶部对齐 */
+}
+.question-text-and-option{
+  flex: 1; /* 允许内容占据剩余空间 */
 }
 </style>
