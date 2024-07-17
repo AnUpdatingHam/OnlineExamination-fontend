@@ -18,10 +18,11 @@
 
 <script>
 import { ElMessage } from 'element-plus';
+import {store} from "@/stores/store";
 export default {
   methods:{
     goToTeam(){
-      this.$router.push({name: 'team'})
+      this.$router.push(`${store.isAdmin ? 'admin' : 'user'}/team`)
     },
   },
   computed:{

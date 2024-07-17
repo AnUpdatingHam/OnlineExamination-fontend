@@ -3,9 +3,9 @@
   <!-- 当前页展示的信息在displayData、所有的信息在historyData。主要区别在于是否经过搜索或分页 -->
   <div class="find">
     <div class="select">
-      <p>用户列表</p>
+      <p style="font-size: 28px">用户列表</p>
     </div>
-    <el-dialog :title="isAdd ? '添加用户' : '修改用户'" v-model="addDialogVisible" width="50%" @close="addDialogClosed">
+    <el-dialog :title="isAdd ? '添加用户' : '修改用户'" v-model="addDialogVisible" width="50%" @close="addDialogClosed" class="dialog-body">
       <!-- 内容主体区 -->
       <el-form :model="addUserForm" :rules="addUserFormRules" ref="addUserFormRef" label-width="70px">
         <el-form-item label="学号" prop="stuId"> <!-- prop是验证规则属性 -->
@@ -32,7 +32,7 @@
     </el-dialog>
 
     <el-col :span="3" style="position: absolute;right: 360px;">
-      <el-button type="primary" @click="handleAdd">添加用户</el-button>
+      <el-button type="primary" class="add-button" @click="handleAdd">添加用户</el-button>
     </el-col>
     <div class="search">
       <input type="text" placeholder="搜索" v-model="state.searchValue">
@@ -437,7 +437,7 @@ export default{
 table{
   margin: 70px;
   margin-bottom: 20px;
-  margin-top: 20px;
+  margin-top: 70px;
 }
 
 table th{
@@ -472,4 +472,16 @@ img {
   align-items: center;
 }
 
+.dialog-body{
+  position: absolute;
+  top: 150px;
+  left: 400px;
+  margin: 10px;
+}
+
+.add-button{
+  position: relative;
+  top: 55px;
+  left: 270px;
+}
 </style>
