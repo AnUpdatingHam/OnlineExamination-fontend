@@ -20,7 +20,7 @@
 <!--              <div class="Radio">-->
                 <input :type="(questions[index].type === 0 || questions[index].type === 10) ? 'radio' : 'checkbox'"
                        :id="`option-${index}-${optionIndex}`" :name="`question-${index}`" v-model="questions[index].ansArray[optionIndex]"
-                       :disabled="submitted" :value="optionIndex" @change="recordAnsChange(index, optionIndex)">
+                       :disabled="submitted" :value="1" @change="recordAnsChange(index, optionIndex)">
                 <label :for="`option-${index}-${optionIndex}`">{{ option }}</label>
 <!--              </div>-->
             </li>
@@ -115,7 +115,7 @@ export default {
       for (let i = 0; i < this.questions.length; i++) {
         let flag = 0
         for (let j = 0; j < this.questions[i].ansArray.length; j++) {
-          if(this.questions[i].ansArray[j] !== this.questions[i].correctAnswerArray[j]){
+          if(this.questions[i].ansArray[j] != this.questions[i].correctAnswerArray[j]){
             flag = 1
             break
           }
@@ -136,7 +136,7 @@ export default {
       let newValue = this.questions[questionIndex].ansArray[optionIndex]
       if(this.questions[questionIndex].type === 0 || this.questions[questionIndex].type === 10){ //单选或正误
         for(let i = 0; i < this.questions[questionIndex].ansArray.length; i++)
-          this.questions[questionIndex].ansArray[i] = 0
+          this.questions[questionIndex].ansArray[i] = 0 
         this.questions[questionIndex].ansArray[optionIndex] = newValue
       }else if(this.questions[questionIndex].type === 1){ //复选
         this.questions[questionIndex].ansArray[optionIndex] = newValue
