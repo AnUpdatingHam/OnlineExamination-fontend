@@ -19,8 +19,8 @@
             <li v-for="(option, optionIndex) in question.options" :key="optionIndex">
 <!--              <div class="Radio">-->
                 <input :type="(questions[index].type === 0 || questions[index].type === 10) ? 'radio' : 'checkbox'"
-                       :id="`option-${index}-${optionIndex}`" :name="`question-${index}`" v-model="questions[index].ans"
-                       :disabled="submitted" :value="optionIndex" @change="recordAnsChange(index)">
+                       :id="`option-${index}-${optionIndex}`" :name="`question-${index}`" v-model="questions[index].ansArray[optionIndex]"
+                       :disabled="submitted" :value="optionIndex" @change="recordAnsChange(index, optionIndex)">
                 <label :for="`option-${index}-${optionIndex}`">{{ option }}</label>
 <!--              </div>-->
             </li>
@@ -58,7 +58,7 @@ export default {
       records: [
       {
         "questionId": 0,
-        "ans": "string",
+        "ans": "array[int]",
         "text": "string",
         "imageUrls": "string",
         "type": 0,
@@ -69,7 +69,7 @@ export default {
       },
       {
         "questionId": 1,
-        "ans": "string",
+        "ans": "array[int]",
         "text": "string",
         "imageUrls": "string",
         "type": 1,
@@ -86,9 +86,11 @@ export default {
           candidateAns: "选项A 选项B 选项C 选项D",
           options: ['张璞', '震撼', '郑汉', '汉灯'],
           score: 5,
-          correctAnswer: 1,
+          type: 0,
+          correctAnswer: "0 1 0 0",
+          correctAnswerArray: [0, 1, 0, 0],
           analysis: '这里是解析的内容，可以根据实际需要填写。',
-          ans: 1
+          ans: "1 0 0 0"
         },
         {
           id: 2,
@@ -96,9 +98,11 @@ export default {
           candidateAns: "选项A 选项B 选项C 选项D",
           options: ['张璞', '郑汉', '震撼', '钝角'],
           score: 95,
-          correctAnswer: 0,
+          type: 1,
+          correctAnswer: "1 0 0 1",
+          correctAnswerArray: [0, 1, 1, 0],
           analysis: '这里是第二个问题的解析内容。',
-          ans: 2
+          ans: "0 1 1 0"
         },
         // Add more questions as needed
       ],
@@ -109,9 +113,14 @@ export default {
     totalScore() {
       let score = 0;
       for (let i = 0; i < this.questions.length; i++) {
-        if (this.questions[i].ans === this.questions[i].correctAnswer) {
-          score += this.questions[i].score;
+        let flag = 0
+        for (let j = 0; j < this.questions[i].ansArray.length; j++) {
+          if(this.questions[i].ansArray[j] !== this.questions[i].correctAnswerArray[j]){
+            flag = 1
+            break
+          }
         }
+        score += (!flag) * this.questions[i].score
       }
       return score;
     }
@@ -123,7 +132,16 @@ export default {
     submitPaper() {
       this.submitted = true;
     },
-    async recordAnsChange(questionIndex) {
+    async recordAnsChange(questionIndex, optionIndex) {
+      let newValue = this.questions[questionIndex].ansArray[optionIndex]
+      if(this.questions[questionIndex].type === 0 || this.questions[questionIndex].type === 10){ //单选或正误
+        for(let i = 0; i < this.questions[questionIndex].ansArray.length; i++)
+          this.questions[questionIndex].ansArray[i] = 0
+        this.questions[questionIndex].ansArray[optionIndex] = newValue
+      }else if(this.questions[questionIndex].type === 1){ //复选
+        this.questions[questionIndex].ansArray[optionIndex] = newValue
+      }
+      this.questions[questionIndex].ans = this.questions[questionIndex].ansArray.join(' ')
       try {
         const putData = {
           id: this.records[questionIndex].recordId,//需要请求获得records
@@ -178,10 +196,13 @@ export default {
       }
 
       const ret = await axios.get(`${constant.host}/user/exam/records/page`, {params: queryParams})
+      console.log("data = " + JSON.stringify(ret.data))
       this.records = ret.data.data.records
       this.questions = this.records
       for (let i = 0; i < this.questions.length; i++) {
         this.questions[i].options = this.records[i].candidateAns.split(' ')
+        this.questions[i].correctAnswerArray = this.questions[i].rightAns.split(' ')
+        this.questions[i].ansArray = this.questions[i].ans.split(' ')
       }
       //根据历史作答和试卷渲染页面
 
